@@ -1,0 +1,10 @@
+sentence-transformers
+faiss-cpu
+openai
+langchain
+langchain_community
+langchain_google_genai
+pypdf
+openpyxl
+unstructured
+docx2txt 
