@@ -1,7 +1,7 @@
 import streamlit as st
-from tab2 import second_tab
-from tab4 import get_summarized_response,query_index,parse_cases
-from tab3 import load_file,get_summarized_response 
+from second import second_tab
+from Fourth import get_summarized_response,query_index,parse_cases
+from Third import load_file,get_summarized_response 
 import os 
 import tempfile
 import re 
