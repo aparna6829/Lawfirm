@@ -126,8 +126,8 @@ def main():
     with tab4:
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-            <strong>Database Repository:</strong>
-                <li><strong>Local Case File</strong></li>
+            <strong>Database Source:</strong>
+                <li><strong>Local Case's File</strong></li>
                 
         </div>
         """,unsafe_allow_html=True)        # user_query = st.text_input("Ask a question about your legal cases:")
