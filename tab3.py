@@ -67,27 +67,14 @@ def get_summarized_response(embedding_path, file_upload_name):
         vector = FAISS.load_local(embedding_path, embeddings, allow_dangerous_deserialization=True)
         db = vector.as_retriever()
    
-        template="""  You are an expert legal assistant specializing in case analysis and legal research. Your task is to assist lawyers by providing accurate and relevant information about their cases based on the available legal documents and case files.
-
-        Use the following context to answer the lawyer's question:
+        template="""  You are a bot who responds to the User queries in a clear and professional manner.
 
         <context>
         {context}
         </context>
 
-        Lawyer's Question: {input}
-
-        Please provide a comprehensive response that includes:
-        1. Relevant case details (e.g., case number, parties involved, date of filing)
-        2. Key legal issues identified
-        3. Applicable laws or precedents
-        4. Important dates or deadlines
-        5. Any critical findings or rulings
-        6. Suggested next steps or strategies, if appropriate
-
-        If the information is not available in the context, clearly state which parts of the question you cannot answer due to lack of information. If you can partially answer the question, provide the available information and indicate what is missing.
-
-        Ensure your response is clear, concise, and directly relevant to the lawyer's query. Use legal terminology appropriately, but also explain complex concepts when necessary.
+         Question: {input}
+         Ensure your response is clear, concise, and directly relevant to the User's query. 
         """ 
 
 

@@ -124,7 +124,7 @@ def main():
    
 
     with tab4:
-        
+        st.success("Database loaded successfully")
         # user_query = st.text_input("Ask a question about your legal cases:")
         user_query = st.text_input("Ask a question about your legal cases:")
         if user_query:
