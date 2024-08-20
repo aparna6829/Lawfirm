@@ -124,8 +124,13 @@ def main():
    
 
     with tab4:
-        st.success("Database repository: Local Case File")
-        # user_query = st.text_input("Ask a question about your legal cases:")
+        st.markdown("""
+        <div style='text-align: justify; font-size: 16px; color: #34495e;'>
+            <strong>Database Repository:</strong>
+                <li><strong>Local Case File</strong></li>
+                
+        </div>
+        """,unsafe_allow_html=True)        # user_query = st.text_input("Ask a question about your legal cases:")
         user_query = st.text_input("Ask a question about your legal cases:")
         if user_query:
             with st.spinner("Analyzing your query..."):
