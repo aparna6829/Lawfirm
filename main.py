@@ -132,7 +132,8 @@ def main():
         </div>
         """,unsafe_allow_html=True)        # user_query = st.text_input("Ask a question about your legal cases:")
         user_query = st.text_input("Ask a question about your legal cases:")
-        if user_query:
+        if st.button("Generate Response"):
+            
             with st.spinner("Analyzing your query..."):
                 cases = query_index(user_query)
                 
