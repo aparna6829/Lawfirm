@@ -9,3 +9,4 @@ openpyxl
 unstructured
 docx2txt 
 python-docx
+streamlit
