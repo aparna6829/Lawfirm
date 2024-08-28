@@ -1,9 +1,7 @@
 import streamlit as st
 from second import second_tab
-from Fourth import get_summarized_response,query_index,parse_cases
+from Fourth import get_summarized_response,query_index
 from Third import load_file,get_summarized_response 
-import os 
-import tempfile
 import re 
 from Five import get_response 
 import google.generativeai as genai
