@@ -200,10 +200,6 @@ def main():
                 generated_answer=generated_text['text']
                 st.write(generated_answer)
                 
-                
-
-    
-    
     with tab6:
         # Path to your image
         image_path = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
