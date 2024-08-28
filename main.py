@@ -206,7 +206,7 @@ def main():
     
     with tab6:
         # Path to your image
-        image_path = st.file_uploader("upload your evidence here:", type=["png", "jpg", "jpeg"])
+        image_path = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
         if image_path:
             with st.expander("Uploaded Evidence"):
                 st.image(image_path)
