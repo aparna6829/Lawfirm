@@ -10,3 +10,7 @@ unstructured
 docx2txt 
 python-docx
 streamlit
+image
+pillow
+google-cloud-aiplatform>=1.38
+google-generativeai

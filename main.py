@@ -5,6 +5,11 @@ from Third import load_file,get_summarized_response
 import os 
 import tempfile
 import re 
+from Five import get_response 
+import google.generativeai as genai
+from evidence import get_image
+
+
 # Set page configuration
 st.set_page_config(page_icon="⚖️", page_title="Legal Bot", layout="wide")
 
@@ -59,6 +64,13 @@ st.markdown(
             position: fixed;
             bottom: 2%;
         }
+        
+        .st-emotion-cache-16idsys p {
+            word-break: break-word;
+            margin-bottom: 0px;
+            font-size: 15px;
+            font-weight: 600;
+        }
     </style>
     """,
     unsafe_allow_html=True
@@ -67,7 +79,7 @@ st.markdown(
 # Main function
 def main():
     # Create tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📜 What is Legal Assist", "📄 Template Drafting", "🔍 Document Insight", "🧠 Legal Inference Engine"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📜 What is Legal Assist", "📄 Template Drafting", "📁 Document Insight", "🧠 Legal Inference Engine", "🧑🏼‍⚖️Legal Assistant", " 🔍 Legal Evidence"])
 
     with tab1:
         st.write("""<h2 style='color: #2c3e50; text-align: center;'>Your Trusted Legal Assistant</h2>""", unsafe_allow_html=True)
@@ -130,7 +142,7 @@ def main():
                 <li><strong>Local Case's File</strong></li>
                 
         </div>
-        """,unsafe_allow_html=True)        # user_query = st.text_input("Ask a question about your legal cases:")
+        """,unsafe_allow_html=True)       
         user_query = st.text_input("Ask a question about your legal cases:")
         if user_query:
             
@@ -143,7 +155,65 @@ def main():
                         for key, value in case.items():
                             if key != 'Case Name':
                                 st.markdown(f"**{key}:** {value}")
+                                
+    with tab5:
+        def set_query(query):
+            st.session_state.query_input = query
+            st.rerun()
 
+        # Initialize session state for the query if it doesn't exist
+        if "query_input" not in st.session_state:
+            st.session_state.query_input = ""
+
+        # The text input field, populated with the query stored in session state
+        query = st.text_input("Enter your query:", value=st.session_state.query_input)
+        
+        st.write("Queries to try:")
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            if st.button("What are the state's laws on wildlife management and hunting?"):
+                set_query("What are the state's laws on wildlife management and hunting?")
+        with col2:
+                
+            if st.button("Please explain the current eminent domain policies in NewYork."):
+                set_query("Please explain the current eminent domain policies in NewYork.")
+        
+        with col3:
+                    
+            if st.button("What are the elements of permitting requirements and notice?"):
+                set_query("What are the elements of permitting requirements and notice?")
+        
+        with col4:
+
+            if st.button("What is adverse possession? What are the elements of adverse possession in Alaska? "):
+                set_query("What is adverse possession? What are the elements of adverse possession in Alaska?")
+                
+            
+        if query:
+            with st.spinner("Analyzing your Query"):
+                llm_chain = get_response(question=query)
+                # Generate text based on the user's input
+                generated_text = llm_chain.invoke({"question": query})
+                # Print the generated text
+                generated_answer=generated_text['text']
+                st.write(generated_answer)
+                
+                
+    with tab6:  
+        file_upload = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"]) 
+        if file_upload:
+            with st.expander("Uploaded_Evidence"):
+                st.image(file_upload)
+            img = get_image(file_upload)
+            user_input = st.text_input("Enter your Question here:")
+            if user_input:
+                with st.spinner("Analyzing your provided evidence"):
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    response = model.generate_content([user_input, img], stream=True)
+                    response.resolve()
+                    st.write(response.text)
+        
 
 if __name__ == '__main__':
     main()
