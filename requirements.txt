@@ -1,6 +1,6 @@
 sentence-transformers
 faiss-cpu
-openai
+openai==0.28.0
 langchain
 langchain_community
 langchain_google_genai
@@ -12,5 +12,3 @@ python-docx
 streamlit
 image
 pillow
-google-cloud-aiplatform>=1.38
-google-generativeai
