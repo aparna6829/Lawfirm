@@ -124,14 +124,14 @@ def main():
         with col1:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-                    <li><strong>1.Master Service Agreement</strong></li><li><strong> 2.New York Agreement</strong></li><li><strong> 3.Data License Agreement</strong></li><li><strong> 4.Professional Service Agreement</strong></li>
+                    <li><strong>Master Service Agreement</strong></li><li><strong>New York Agreement</strong></li><li><strong>Data License Agreement</strong></li><li><strong>Professional Service Agreement</strong></li>
                     
             </div>
             """,unsafe_allow_html=True)
         with col2:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-                    <li><strong>5.Asset Purchase Agreement</strong></li> <li><strong> 6.Safe Simple Agreement for Future Equity</strong></li> <li><strong>7.Founder's Stock Purchase Agreement</strong></li>
+                    <li><strong>Asset Purchase Agreement</strong></li> <li><strong>Safe Simple Agreement for Future Equity</strong></li> <li><strong>Founder's Stock Purchase Agreement</strong></li>
                     
             </div>
             """,unsafe_allow_html=True)
