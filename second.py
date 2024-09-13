@@ -20,12 +20,13 @@ doc6_path= "SAFE2.docx"
 doc7_path= "Stock_Purchase_Agreement_Startups.docx"
  
 doc1 = Document(doc1_path)
+print (doc1)
 doc2 = Document(doc2_path)
-doc3=Document(doc3_path)
-doc4=Document(doc4_path)
-doc5=Document(doc5_path)
-doc6=Document(doc6_path)
-doc7=Document(doc7_path)
+doc3= Document(doc3_path)
+doc4= Document(doc4_path)
+doc5= Document(doc5_path)
+doc6= Document(doc6_path)
+doc7= Document(doc7_path)
  
 placeholders1 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc1.paragraphs]))
 placeholders2 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc2.paragraphs]))
