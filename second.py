@@ -92,20 +92,7 @@ def process_input(user_input, placeholders1, placeholders2,placeholders3,placeho
     return response
  
  
-# Load documents and extract placeholders
- 
-# Initialize session state
-if 'state' not in st.session_state:
-    st.session_state.state = {
-        'user_input': "",
-        'collected_details': {},
-        'placeholders': {},
-        'processed': False,
-        'document_generated': False,
-        'final_doc': None,
-        'document_type': ""
-    }
-   
+
    
 def add_content_to_document(doc_path, placeholders):
     doc = Document(doc_path)
@@ -121,12 +108,21 @@ if 'state' not in st.session_state:
     st.session_state.state = {
         'user_input': "",
         'collected_details': {},
-        'definitions': {},
         'placeholders': {},
         'processed': False,
         'document_generated': False,
         'final_doc': None,
         'document_type': ""
     }
+ 
+# Function to reset the session state
+def reset_session_state():
+    st.session_state.state['user_input'] = ""
+    st.session_state.state['processed'] = False
+    st.session_state.state['document_generated'] = False
+    st.session_state.state['final_doc'] = None
+    st.session_state.state['document_type'] = ""
+    st.session_state.state['placeholders'] = {}
+    st.session_state.state['collected_details'] = {}
  
  

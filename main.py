@@ -9,7 +9,7 @@ from Evidence_2 import encode_image
 import requests
 import json
 import io
-from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7
+from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7, reset_session_state
 
 
 # Set page configuration
@@ -121,11 +121,15 @@ def main():
                 
         </div>
         """,unsafe_allow_html=True)
-        user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
+        user_input = st.text_area("Enter your query to fill the details:", 
+                          value=st.session_state.state['user_input'],
+                          key="user_input_area")
+ 
         if user_input and st.button("Process Input"):
-            st.session_state.state['user_input'] = user_input
+            # Reset the session state before processing new input
+            reset_session_state()
             with st.spinner("Processing your input..."):
-                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2, placeholders3, placeholders4, placeholders5, placeholders6, placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
                 try:
@@ -133,10 +137,13 @@ def main():
                     fresponse = json.loads(fresponse)
                 except:
                     fresponse = json.loads(fresponse)
+                # Update session state
                 st.session_state.state['document_type'] = fresponse.get("document", "")
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
+                st.session_state.state['user_input'] = user_input  # Store the processed input
             st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
+            st.experimental_rerun()  # Rerun the app to update the UI
         
         # Display placeholders 
         if st.session_state.state['processed']:
