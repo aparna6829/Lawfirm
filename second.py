@@ -1,156 +1,210 @@
-import os
 import streamlit as st
 import re
-from langchain_community.llms.huggingface_endpoint import HuggingFaceEndpoint
 from langchain.prompts import PromptTemplate
 from docx import Document
-import tempfile
 from langchain_google_genai import ChatGoogleGenerativeAI
-
+import json
+import io
+ 
 Gemini = st.secrets["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemini)
+ 
 
-
-# Function to get response from LLM
-def get_response(user_input, placeholders1, placeholders2):
+ 
+doc1_path = "my_own.docx "
+doc2_path = "my_own2.docx"
+doc3_path= "Data_license_Agreement.docx"
+doc4_path= "professional_service_agreement.docx"
+doc5_path= "asset_purchase_agreement.docx"
+doc6_path= "SAFE2.docx"
+doc7_path= "Stock_Purchase_Agreement_Startups.docx"
+ 
+doc1 = Document(doc1_path)
+doc2 = Document(doc2_path)
+doc3=Document(doc3_path)
+doc4=Document(doc4_path)
+doc5=Document(doc5_path)
+doc6=Document(doc6_path)
+doc7=Document(doc7_path)
+ 
+placeholders1 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc1.paragraphs]))
+placeholders2 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc2.paragraphs]))
+placeholders3 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc3.paragraphs]))
+placeholders4 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc4.paragraphs]))
+placeholders5= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc5.paragraphs]))
+placeholders6= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc6.paragraphs]))
+placeholders7= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc7.paragraphs]))
+ 
+def process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,
+                  placeholders6,placeholders7):
     template = """
-    You are an expert in filling details in word documents using placeholders.
-    Use the provided details to fill out the placeholders.
+    You are an expert in filling details in word documents using placeholders and providing definitions for legal conditions.
+    Use the provided details to fill out the placeholders .
     Determine which document the details are for based on the context provided.
-    Indicate which document the details belong to by specifying "Document: Master Service Agreement" or "Document: New York Agreement" at the beginning of your response.
+    Indicate which document the details belong to by specifying "Document: Master Service Agreement" or "Document: New York Agreement" or "Document: Data License Agreement"
+    or "Document: asset purchase agreement" or "Document: Safe simple agreement for future Equity" or "Document: Founders stock purchase agreement" at the beginning of your response.
     If any details are missing, indicate which ones are missing.
-
-    Document 1 (Master Service Agreement) placeholders: {placeholders1}
-    please give only date, dont give the year and other matter for master service document
-    Document 2 (New York Agreement) placeholders: {placeholders2}
-
+   
+    Document 1 (New York Agreement) placeholders: {placeholders1}
+    Document 2 (Master Service Agreement) placeholders: {placeholders2}
+    Document 3 (Data License Agreement) placeholders: {placeholders3}
+    Document 4 (Professional service Agreement) placeholders: {placeholders4}
+    Document 5 (Asset purchase agreement) placeholders: {placeholders5}
+    Document 6 (Safe simple agreement for future Equity) placeholders : {placeholders6}
+    Document 7 (Founders stock purchase agreement) placeholders : {placeholders7}
+   
+   
+    For Master Service Agreement, please give only date, don't give the year and other matter.
+   
     For each placeholder, provide the information in this format:
     PLACEHOLDER: information
-
+ 
     If a placeholder is missing information, use this format:
     PLACEHOLDER: MISSING
-
+ 
+    Based on the user input, fill in the placeholders and provide definitions for relevant legal terms.
+    Structure your response exactly like this, replacing the examples with actual content:
+    [
+      "document": "Master Service Agreement" or "New York Agreement" or "Data License Agreement" or "Professional service agreement" or "asset purchase agreement" or "Safe simple agreement for future Equity" or "Founders stock purchase agreement",
+      "placeholders": [
+          "PLACEHOLDER1": "Value1",
+          "PLACEHOLDER2": "Value2",
+          "PLACEHOLDER3": "MISSING"
+        ]
+    ]
+ 
     User input: {content}
-
+   
     Response:
     """
-    formatted_template = template.format(
-        placeholders1=placeholders1, 
-        placeholders2=placeholders2, 
-        content=user_input
-    )
+   
+    formatted_template = template.format(placeholders1=placeholders1,
+                                         placeholders2=placeholders2,
+                                         placeholders3=placeholders3,
+                                         placeholders4=placeholders4,
+                                         placeholders5=placeholders5,
+                                         placeholders6=placeholders6,
+                                         placeholders7=placeholders7,
+                                         content=user_input)
     prompt = PromptTemplate(template=formatted_template)
     chain = prompt | llm
     response = chain.invoke({"content": user_input})
-    
-    return response.content
-
-# Function to parse LLM response
-def parse_llm_response(response):
-    lines = response.split('\n')
-    parsed_response = {}
-    selected_doc = None
-    
-    for line in lines:
-        if line.startswith("Document:"):
-            if "Master Service Agreement" in line:
-                selected_doc = 1
-            elif "New York Agreement" in line:
-                selected_doc = 2
-        elif ':' in line:
-            key, value = line.split(':', 1)
-            parsed_response[key.strip()] = value.strip()
-    
-    return parsed_response, selected_doc
-
-# Function to fill placeholders in a Word document
-def fill_placeholders(doc, response):
-    for p in doc.paragraphs:
-        for placeholder in re.findall(r'\{\{(.*?)\}\}', p.text):
-            if placeholder in response:
-                p.text = p.text.replace("{{" + placeholder + "}}", response[placeholder])
+    return response
+ 
+ 
+# Load documents and extract placeholders
+ 
+# Initialize session state
+if 'state' not in st.session_state:
+    st.session_state.state = {
+        'user_input': "",
+        'collected_details': {},
+        'placeholders': {},
+        'processed': False,
+        'document_generated': False,
+        'final_doc': None,
+        'document_type': ""
+    }
+   
+   
+def add_content_to_document(doc_path, placeholders):
+    doc = Document(doc_path)
+    # Replace placeholders
+    for paragraph in doc.paragraphs:
+        for key, value in placeholders.items():
+            if value != "MISSING":
+                paragraph.text = paragraph.text.replace(f"{{{{{key}}}}}", value)    
     return doc
-
-
-def second_tab():
-# Load documents
-    doc1_path = "testing.docx"
-    doc2_path = "testing2.docx"
-    doc1 = Document(doc1_path)
-    doc2 = Document(doc2_path)
-    placeholders1 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc1.paragraphs]))
-    placeholders2 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc2.paragraphs]))
-
-    # Initialize session state
-    if 'collected_details' not in st.session_state:
-        st.session_state.collected_details = {}
-    if 'llm_response' not in st.session_state:
-        st.session_state.llm_response = {}
-    if 'user_input' not in st.session_state:
-        st.session_state.user_input = ""
-    if 'selected_doc' not in st.session_state:
-        st.session_state.selected_doc = None
-
-    # Get user input
-
-        
-    user_input = st.text_area("Enter your query to fill the document details:", value=st.session_state.user_input)
-
-    if user_input:
-        st.session_state.user_input = user_input
-        if st.button("Process Input"):
-            with st.spinner("Processing input..."):
-                llm_response = get_response(user_input, ", ".join(placeholders1), ", ".join(placeholders2))
-                st.session_state.llm_response, st.session_state.selected_doc = parse_llm_response(llm_response)
-                st.session_state.collected_details = {}  # Reset collected details
-
-    if st.session_state.llm_response:
-        st.write("LLM Response:")
-        st.write(st.session_state.llm_response)
-        
-        missing_placeholders = [placeholder for placeholder, value in st.session_state.llm_response.items() if value == 'MISSING']
-        
-        # Collect missing information
-        for placeholder in missing_placeholders:
-            if placeholder not in st.session_state.collected_details:
-                st.session_state.collected_details[placeholder] = ""
-            
-            user_detail = st.text_input(f"Please provide the {placeholder.replace('_', ' ')}:", 
-                                        key=placeholder, 
-                                        value=st.session_state.collected_details.get(placeholder, ""))
-            
-            if user_detail:
-                st.session_state.collected_details[placeholder] = user_detail
-
-        # Update the response with collected details
-        final_response = st.session_state.llm_response.copy()
-        final_response.update(st.session_state.collected_details)
-
-        # Submit button to proceed after filling all missing information
-        if st.button("Generate Document"):
-            if all(value != 'MISSING' for value in final_response.values()):
-                if st.session_state.selected_doc == 1:
-                    filled_doc = fill_placeholders(doc1, final_response)
-                    doc_name = "Master Service Agreement"
-                elif st.session_state.selected_doc == 2:
-                    filled_doc = fill_placeholders(doc2, final_response)
-                    doc_name = "New York Agreement"
-                else:   
-                    st.error("Invalid document selected. Please try again.")
-                    st.stop()
-
-                filled_doc_path = tempfile.mktemp(suffix=".docx")
-                filled_doc.save(filled_doc_path)
-
-                # Download filled document
-                with open(filled_doc_path, "rb") as file:
-                    st.download_button(
-                        label=f"Download filled {doc_name}",
-                        data=file,
-                        file_name=f"filled_{doc_name.lower().replace(' ', '_')}.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    )
+ 
+# Initialize session state
+if 'state' not in st.session_state:
+    st.session_state.state = {
+        'user_input': "",
+        'collected_details': {},
+        'definitions': {},
+        'placeholders': {},
+        'processed': False,
+        'document_generated': False,
+        'final_doc': None,
+        'document_type': ""
+    }
+ 
+ 
+user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
+if user_input and st.button("Process Input"):
+    st.session_state.state['user_input'] = user_input
+    with st.spinner("Processing your input..."):
+        processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
+        processed_response = processed_response.content
+        fresponse = processed_response.replace('[','{').replace(']','}')
+        try:
+            fresponse = fresponse.split("```json")[1].split("```")[0]
+            fresponse = json.loads(fresponse)
+        except:
+            fresponse = json.loads(fresponse)
+        st.session_state.state['document_type'] = fresponse.get("document", "")
+        st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
+        st.session_state.state['processed'] = True
+    st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
+ 
+# Display placeholders and definitions side by side
+if st.session_state.state['processed']:
+    st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
+    for key, value in st.session_state.state['placeholders'].items():
+        if value == "MISSING":
+            user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
+                                        value=st.session_state.state['collected_details'].get(key, ""))
+            st.session_state.state['collected_details'][key] = user_detail
+        else:
+            st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
+ 
+    if st.button("Update Missing Details"):
+        for key, value in st.session_state.state['collected_details'].items():
+            if value:
+                st.session_state.state['placeholders'][key] = value
+        st.success("Missing Details updated successfully!")
+ 
+    # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
+    if st.button("Generate Final Document"):
+        with st.spinner("Generating document..."):
+            doc_paths = {
+            "master service agreement": doc2_path,
+            "new york agreement": doc1_path,
+            "data license agreement": doc3_path,
+            "professional service agreement": doc4_path,
+            "asset purchase agreement": doc5_path,
+            "safe simple agreement for future equity" : doc6_path,
+            "founders stock purchase agreement" : doc7_path
+        }
+           
+            document_type = st.session_state.state['document_type'].lower()
+           
+            doc_path = doc_paths.get(document_type.lower())
+            if doc_path:
+                st.session_state.state['final_doc'] = add_content_to_document(
+                    doc_path,
+                    st.session_state.state['placeholders']
+                )
+                st.session_state.state['document_generated'] = True
+               
             else:
-                st.warning("Please fill in all missing information before generating the document.")
-    else:
-        st.info("Please enter the details to fill the document and click 'Process Input'.")
+                st.error(f"Unknown document type: {st.session_state.state['document_type']}")
+        st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
+    if st.session_state.state['document_generated']:
+        bio = io.BytesIO()
+        st.session_state.state['final_doc'].save(bio)
+        st.download_button(
+            label="Download Final Document",
+            data=bio.getvalue(),
+            file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+ 
+    # Display the final content of placeholders and definitions
+    if st.checkbox("Show final content"):
+        st.json(st.session_state.state['placeholders'])
+ 
+else:
+    st.info("Please enter your query and click 'Process Input' to start.")
+# st.markdown('</div>', unsafe_allow_html=True)
