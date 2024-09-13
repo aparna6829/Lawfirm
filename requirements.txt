@@ -12,3 +12,4 @@ python-docx
 streamlit
 image
 pillow
+python-docx
