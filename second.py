@@ -117,16 +117,16 @@ def add_content_to_document(doc_path, placeholders):
     return doc
  
 # Initialize session state
-# if 'state' not in st.session_state:
-#     st.session_state.state = {
-#         'user_input': "",
-#         'collected_details': {},
-#         'definitions': {},
-#         'placeholders': {},
-#         'processed': False,
-#         'document_generated': False,
-#         'final_doc': None,
-#         'document_type': ""
-#     }
+if 'state' not in st.session_state:
+    st.session_state.state = {
+        'user_input': "",
+        'collected_details': {},
+        'definitions': {},
+        'placeholders': {},
+        'processed': False,
+        'document_generated': False,
+        'final_doc': None,
+        'document_type': ""
+    }
  
  
