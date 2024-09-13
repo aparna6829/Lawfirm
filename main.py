@@ -115,9 +115,10 @@ def main():
     with tab2:
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-            <strong>Currently there are two types of legal documents/templates:</strong>
-                <li><strong>Master Service Agreement</strong></li>
+            <strong>Currently these are the document templates available to streamline your legal documentation/templates:</strong>
+                <li><strong>1.Master Service Agreement           2.New York Agreement </strong></li>
                 <li><strong>New York Agreement</strong></li>
+                
         </div>
         """,unsafe_allow_html=True)
         user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
