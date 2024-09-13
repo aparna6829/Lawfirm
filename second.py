@@ -7,7 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import json
 import io
  
-Gemini = st.scatter_chart["GOOGLE_API_KEY"]
+Gemini = st.secrets["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemini)
  
 
