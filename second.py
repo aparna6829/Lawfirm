@@ -117,17 +117,17 @@ def add_content_to_document(doc_path, placeholders):
     return doc
  
 # Initialize session state
-if 'state' not in st.session_state:
-    st.session_state.state = {
-        'user_input': "",
-        'collected_details': {},
-        'definitions': {},
-        'placeholders': {},
-        'processed': False,
-        'document_generated': False,
-        'final_doc': None,
-        'document_type': ""
-    }
+# if 'state' not in st.session_state:
+#     st.session_state.state = {
+#         'user_input': "",
+#         'collected_details': {},
+#         'definitions': {},
+#         'placeholders': {},
+#         'processed': False,
+#         'document_generated': False,
+#         'final_doc': None,
+#         'document_type': ""
+#     }
  
  
 user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
@@ -147,7 +147,7 @@ if user_input and st.button("Process Input"):
         st.session_state.state['processed'] = True
     st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
  
-# Display placeholders and definitions side by side
+# Display placeholders 
 if st.session_state.state['processed']:
     st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
     st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
