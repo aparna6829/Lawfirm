@@ -3,12 +3,10 @@ import streamlit as st
 import re
 from langchain.prompts import PromptTemplate
 from docx import Document
-from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 import json
 import io
  
-load_dotenv()
 Gemini = st.scatter_chart["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemini)
  
