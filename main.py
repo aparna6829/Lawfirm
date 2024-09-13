@@ -113,13 +113,14 @@ def main():
         )
 
     with tab2:
-        col1, col2 = st.columns(2)
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
             <strong>Currently these are the document templates available to streamline your legal documentation/templates:</strong>
               
         </div>
         """,unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        
         with col1:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
