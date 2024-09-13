@@ -20,7 +20,6 @@ doc6_path= r"SAFE2.docx"
 doc7_path= r"Stock_Purchase_Agreement_Startups.docx"
  
 doc1 = Document(doc1_path)
-print (doc1)
 doc2 = Document(doc2_path)
 doc3= Document(doc3_path)
 doc4= Document(doc4_path)
@@ -131,81 +130,3 @@ def add_content_to_document(doc_path, placeholders):
 #     }
  
  
-user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
-if user_input and st.button("Process Input"):
-    st.session_state.state['user_input'] = user_input
-    with st.spinner("Processing your input..."):
-        processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
-        processed_response = processed_response.content
-        fresponse = processed_response.replace('[','{').replace(']','}')
-        try:
-            fresponse = fresponse.split("```json")[1].split("```")[0]
-            fresponse = json.loads(fresponse)
-        except:
-            fresponse = json.loads(fresponse)
-        st.session_state.state['document_type'] = fresponse.get("document", "")
-        st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
-        st.session_state.state['processed'] = True
-    st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
- 
-# Display placeholders 
-if st.session_state.state['processed']:
-    st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
-    st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
-    for key, value in st.session_state.state['placeholders'].items():
-        if value == "MISSING":
-            user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
-                                        value=st.session_state.state['collected_details'].get(key, ""))
-            st.session_state.state['collected_details'][key] = user_detail
-        else:
-            st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
- 
-    if st.button("Update Missing Details"):
-        for key, value in st.session_state.state['collected_details'].items():
-            if value:
-                st.session_state.state['placeholders'][key] = value
-        st.success("Missing Details updated successfully!")
- 
-    # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
-    if st.button("Generate Final Document"):
-        with st.spinner("Generating document..."):
-            doc_paths = {
-            "master service agreement": doc2_path,
-            "new york agreement": doc1_path,
-            "data license agreement": doc3_path,
-            "professional service agreement": doc4_path,
-            "asset purchase agreement": doc5_path,
-            "safe simple agreement for future equity" : doc6_path,
-            "founders stock purchase agreement" : doc7_path
-        }
-           
-            document_type = st.session_state.state['document_type'].lower()
-           
-            doc_path = doc_paths.get(document_type.lower())
-            if doc_path:
-                st.session_state.state['final_doc'] = add_content_to_document(
-                    doc_path,
-                    st.session_state.state['placeholders']
-                )
-                st.session_state.state['document_generated'] = True
-               
-            else:
-                st.error(f"Unknown document type: {st.session_state.state['document_type']}")
-        st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
-    if st.session_state.state['document_generated']:
-        bio = io.BytesIO()
-        st.session_state.state['final_doc'].save(bio)
-        st.download_button(
-            label="Download Final Document",
-            data=bio.getvalue(),
-            file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        )
- 
-    # Display the final content of placeholders and definitions
-    if st.checkbox("Show final content"):
-        st.json(st.session_state.state['placeholders'])
- 
-else:
-    st.info("Please enter your query and click 'Process Input' to start.")
-# st.markdown('</div>', unsafe_allow_html=True)
