@@ -11,7 +11,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemin
  
 
  
-doc1_path = r"my_own.docx "
+doc1_path = r"my_own.docx"
 doc2_path = r"my_own2.docx"
 doc3_path= r"Data_license_Agreement.docx"
 doc4_path= r"professional_service_agreement.docx"
