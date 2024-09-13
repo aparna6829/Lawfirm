@@ -116,7 +116,7 @@ def main():
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
             <strong>Currently these are the document templates available to streamline your legal documentation/templates:</strong>
-                <li><strong>1.Master Service Agreement 2.New York Agreement 3.Data License Agreement 4.Professional Service Agreement </strong></li>
+                <li><strong>1.Master Service Agreement</strong></li><li><strong> 2.New York Agreement</strong></li><li><strong> 3.Data License Agreement</strong></li><li><strong> 4.Professional Service Agreement</strong></li>
                 <li><strong>5.Asset Purchase Agreement 6.Safe Simple Agreement for Future Equity 7.Founder's Stock Purchase Agreement</strong></li>
                 
         </div>
