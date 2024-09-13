@@ -11,13 +11,13 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemin
  
 
  
-doc1_path = "my_own.docx "
-doc2_path = "my_own2.docx"
-doc3_path= "Data_license_Agreement.docx"
-doc4_path= "professional_service_agreement.docx"
-doc5_path= "asset_purchase_agreement.docx"
-doc6_path= "SAFE2.docx"
-doc7_path= "Stock_Purchase_Agreement_Startups.docx"
+doc1_path = r"my_own.docx "
+doc2_path = r"my_own2.docx"
+doc3_path= r"Data_license_Agreement.docx"
+doc4_path= r"professional_service_agreement.docx"
+doc5_path= r"asset_purchase_agreement.docx"
+doc6_path= r"SAFE2.docx"
+doc7_path= r"Stock_Purchase_Agreement_Startups.docx"
  
 doc1 = Document(doc1_path)
 print (doc1)
