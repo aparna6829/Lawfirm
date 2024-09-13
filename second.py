@@ -1,31 +1,34 @@
+import os
 import streamlit as st
 import re
 from langchain.prompts import PromptTemplate
 from docx import Document
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 import json
 import io
  
-Gemini = st.secrets["GOOGLE_API_KEY"]
+load_dotenv()
+Gemini = st.scatter_chart["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemini)
  
 
  
-doc1_path = r"my_own.docx"
-doc2_path = r"my_own2.docx"
-doc3_path= r"Data_license_Agreement.docx"
-doc4_path= r"professional_service_agreement.docx"
-doc5_path= r"asset_purchase_agreement.docx"
-doc6_path= r"SAFE2.docx"
-doc7_path= r"Stock_Purchase_Agreement_Startups.docx"
+doc1_path = "my_own.docx"
+doc2_path = "my_own2.docx"
+doc3_path = "Data_license_Agreement.docx"
+doc4_path = "professional_service_agreement.docx"
+doc5_path = "asset_purchase_agreement.docx"
+doc6_path = "SAFE2.docx"
+doc7_path = "Stock_Purchase_Agreement_Startups.docx"
  
 doc1 = Document(doc1_path)
 doc2 = Document(doc2_path)
-doc3= Document(doc3_path)
-doc4= Document(doc4_path)
-doc5= Document(doc5_path)
-doc6= Document(doc6_path)
-doc7= Document(doc7_path)
+doc3=Document(doc3_path)
+doc4=Document(doc4_path)
+doc5=Document(doc5_path)
+doc6=Document(doc6_path)
+doc7=Document(doc7_path)
  
 placeholders1 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc1.paragraphs]))
 placeholders2 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc2.paragraphs]))
@@ -92,16 +95,7 @@ def process_input(user_input, placeholders1, placeholders2,placeholders3,placeho
     return response
  
  
-
-   
-def add_content_to_document(doc_path, placeholders):
-    doc = Document(doc_path)
-    # Replace placeholders
-    for paragraph in doc.paragraphs:
-        for key, value in placeholders.items():
-            if value != "MISSING":
-                paragraph.text = paragraph.text.replace(f"{{{{{key}}}}}", value)    
-    return doc
+# Load documents and extract placeholders
  
 # Initialize session state
 if 'state' not in st.session_state:
@@ -114,15 +108,14 @@ if 'state' not in st.session_state:
         'final_doc': None,
         'document_type': ""
     }
- 
-# Function to reset the session state
-def reset_session_state():
-    st.session_state.state['user_input'] = ""
-    st.session_state.state['processed'] = False
-    st.session_state.state['document_generated'] = False
-    st.session_state.state['final_doc'] = None
-    st.session_state.state['document_type'] = ""
-    st.session_state.state['placeholders'] = {}
-    st.session_state.state['collected_details'] = {}
- 
+   
+   
+def add_content_to_document(doc_path, placeholders):
+    doc = Document(doc_path)
+    # Replace placeholders
+    for paragraph in doc.paragraphs:
+        for key, value in placeholders.items():
+            if value != "MISSING":
+                paragraph.text = paragraph.text.replace(f"{{{{{key}}}}}", value)    
+    return doc
  

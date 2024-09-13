@@ -121,15 +121,25 @@ def main():
                 
         </div>
         """,unsafe_allow_html=True)
-        user_input = st.text_area("Enter your query to fill the details:", 
-                          value=st.session_state.state['user_input'],
-                          key="user_input_area")
- 
+        # Initialize session state
+        if 'state' not in st.session_state:
+            st.session_state.state = {
+                'user_input': "",
+                'collected_details': {},
+                'definitions': {},
+                'placeholders': {},
+                'processed': False,
+                'document_generated': False,
+                'final_doc': None,
+                'document_type': ""
+            }
+        
+        
+        user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
         if user_input and st.button("Process Input"):
-            # Reset the session state before processing new input
-            reset_session_state()
+            st.session_state.state['user_input'] = user_input
             with st.spinner("Processing your input..."):
-                processed_response = process_input(user_input, placeholders1, placeholders2, placeholders3, placeholders4, placeholders5, placeholders6, placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
                 try:
@@ -137,15 +147,12 @@ def main():
                     fresponse = json.loads(fresponse)
                 except:
                     fresponse = json.loads(fresponse)
-                # Update session state
                 st.session_state.state['document_type'] = fresponse.get("document", "")
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
-                st.session_state.state['user_input'] = user_input  # Store the processed input
             st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
-            st.experimental_rerun()  # Rerun the app to update the UI
         
-        # Display placeholders 
+        # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
             st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
@@ -206,7 +213,6 @@ def main():
         else:
             st.info("Please enter your query and click 'Process Input' to start.")
         # st.markdown('</div>', unsafe_allow_html=True)
-
     with tab3:
         uploaded_file = st.file_uploader("Upload your file", type=["pdf", "csv", "docx", "xlsx", "xls"], label_visibility="collapsed")
         if uploaded_file is not None:
