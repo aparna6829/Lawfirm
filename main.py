@@ -79,8 +79,8 @@ st.markdown(
         .st-emotion-cache-jkfxgf p {
         word-break: break-word;
         margin-bottom: 0px;
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 500;
         color: black;
     }
     </style>
