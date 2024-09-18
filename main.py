@@ -76,6 +76,13 @@ st.markdown(
             font-size: 15px;
             font-weight: 600;
         }
+        .st-emotion-cache-jkfxgf p {
+        word-break: break-word;
+        margin-bottom: 0px;
+        font-size: 16px;
+        font-weight: 600;
+        color: black;
+    }
     </style>
     """,
     unsafe_allow_html=True
