@@ -79,9 +79,12 @@ st.markdown(
         .st-emotion-cache-jkfxgf p {
         word-break: break-word;
         margin-bottom: 0px;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 500;
         color: black;
+    }
+    .st-ez {
+    -webkit-text-fill-color: black;
     }
     </style>
     """,
