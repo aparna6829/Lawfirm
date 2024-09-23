@@ -126,9 +126,9 @@ def main():
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
             <strong>Currently these are the document templates available to streamline your legal documentation/templates:</strong>
-            
+              
         </div>
-        """, unsafe_allow_html=True)
+        """,unsafe_allow_html=True)
         col1, col2 = st.columns([1,3])
         
         with col1:
@@ -137,15 +137,14 @@ def main():
                     <li><strong>Master Service Agreement</strong></li><li><strong>New York Agreement</strong></li><li><strong>Data License Agreement</strong></li><li><strong>Professional Service Agreement</strong></li>
                     
             </div>
-            """, unsafe_allow_html=True)
+            """,unsafe_allow_html=True)
         with col2:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
                     <li><strong>Asset Purchase Agreement</strong></li> <li><strong>Safe Simple Agreement for Future Equity</strong></li> <li><strong>Founder's Stock Purchase Agreement</strong></li>
                     
             </div>
-            """, unsafe_allow_html=True)
-        
+            """,unsafe_allow_html=True)
         # Initialize session state
         if 'state' not in st.session_state:
             st.session_state.state = {
@@ -159,30 +158,12 @@ def main():
                 'document_type': ""
             }
         
-        # Clear session state function
-        def clear_session_state():
-            st.session_state.state = {
-                'user_input': "",
-                'collected_details': {},
-                'definitions': {},
-                'placeholders': {},
-                'processed': False,
-                'document_generated': False,
-                'final_doc': None,
-                'document_type': ""
-            }
-        
-        # Clear session state button
-        if st.button("Clear Previous Input"):
-            clear_session_state()
-            st.success("Session state cleared. You can enter a new query.")
         
         user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
         if user_input and st.button("Process Input"):
-            clear_session_state()  # Clear state before processing new input
             st.session_state.state['user_input'] = user_input
             with st.spinner("Processing your input..."):
-                processed_response = process_input(user_input, placeholders1, placeholders2, placeholders3, placeholders4, placeholders5, placeholders6, placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
                 try:
@@ -194,30 +175,68 @@ def main():
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
             st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
-
-        # Rest of the code remains the same...
-
-        if st.session_state.state['document_generated']:
-            bio = io.BytesIO()
-            st.session_state.state['final_doc'].save(bio)
-            st.download_button(
-                label="Download Final Document",
-                data=bio.getvalue(),
-                file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
-            
-            # Clear session state after document generation
-            if st.button("Start New Document"):
-                clear_session_state()
-                st.success("Session cleared. You can start a new document.")
-
-        # Display the final content of placeholders and definitions
-        if st.checkbox("Show final content"):
-            st.json(st.session_state.state['placeholders'])
-
-        if not st.session_state.state['processed']:
+        
+        # Display placeholders and definitions side by side
+        if st.session_state.state['processed']:
+            st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
+            st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
+            for key, value in st.session_state.state['placeholders'].items():
+                if value == "MISSING":
+                    user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
+                                                value=st.session_state.state['collected_details'].get(key, ""))
+                    st.session_state.state['collected_details'][key] = user_detail
+                else:
+                    st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
+        
+            if st.button("Update Missing Details"):
+                for key, value in st.session_state.state['collected_details'].items():
+                    if value:
+                        st.session_state.state['placeholders'][key] = value
+                st.success("Missing Details updated successfully!")
+        
+            # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
+            if st.button("Generate Final Document"):
+                with st.spinner("Generating document..."):
+                    doc_paths = {
+                    "master service agreement": doc2_path,
+                    "new york agreement": doc1_path,
+                    "data license agreement": doc3_path,
+                    "professional service agreement": doc4_path,
+                    "asset purchase agreement": doc5_path,
+                    "safe simple agreement for future equity" : doc6_path,
+                    "founders stock purchase agreement" : doc7_path
+                }
+                
+                    document_type = st.session_state.state['document_type'].lower()
+                
+                    doc_path = doc_paths.get(document_type.lower())
+                    if doc_path:
+                        st.session_state.state['final_doc'] = add_content_to_document(
+                            doc_path,
+                            st.session_state.state['placeholders']
+                        )
+                        st.session_state.state['document_generated'] = True
+                    
+                    else:
+                        st.error(f"Unknown document type: {st.session_state.state['document_type']}")
+                st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
+            if st.session_state.state['document_generated']:
+                bio = io.BytesIO()
+                st.session_state.state['final_doc'].save(bio)
+                st.download_button(
+                    label="Download Final Document",
+                    data=bio.getvalue(),
+                    file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+        
+            # Display the final content of placeholders and definitions
+            if st.checkbox("Show final content"):
+                st.json(st.session_state.state['placeholders'])
+        
+        else:
             st.info("Please enter your query and click 'Process Input' to start.")
+        # st.markdown('</div>', unsafe_allow_html=True)
     with tab3:
         uploaded_file = st.file_uploader("Upload your file", type=["pdf", "csv", "docx", "xlsx", "xls"], label_visibility="collapsed")
         if uploaded_file is not None:
