@@ -126,9 +126,9 @@ def main():
         st.markdown("""
         <div style='text-align: justify; font-size: 16px; color: #34495e;'>
             <strong>Currently these are the document templates available to streamline your legal documentation/templates:</strong>
-            
+              
         </div>
-        """, unsafe_allow_html=True)
+        """,unsafe_allow_html=True)
         col1, col2 = st.columns([1,3])
         
         with col1:
@@ -137,15 +137,14 @@ def main():
                     <li><strong>Master Service Agreement</strong></li><li><strong>New York Agreement</strong></li><li><strong>Data License Agreement</strong></li><li><strong>Professional Service Agreement</strong></li>
                     
             </div>
-            """, unsafe_allow_html=True)
+            """,unsafe_allow_html=True)
         with col2:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
                     <li><strong>Asset Purchase Agreement</strong></li> <li><strong>Safe Simple Agreement for Future Equity</strong></li> <li><strong>Founder's Stock Purchase Agreement</strong></li>
                     
             </div>
-            """, unsafe_allow_html=True)
-        
+            """,unsafe_allow_html=True)
         # Initialize session state
         if 'state' not in st.session_state:
             st.session_state.state = {
@@ -159,30 +158,12 @@ def main():
                 'document_type': ""
             }
         
-        # Clear session state function
-        def clear_session_state():
-            st.session_state.state = {
-                'user_input': "",
-                'collected_details': {},
-                'definitions': {},
-                'placeholders': {},
-                'processed': False,
-                'document_generated': False,
-                'final_doc': None,
-                'document_type': ""
-            }
         
-        # Clear session state button
-        if st.button("Clear Previous Input"):
-            clear_session_state()
-            st.success("Session state cleared. You can enter a new query.")
-        
-        user_input = st.text_area("Enter your query to fill the details:")
+        user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
         if user_input and st.button("Process Input"):
-            clear_session_state()  # Clear state before processing new input
             st.session_state.state['user_input'] = user_input
             with st.spinner("Processing your input..."):
-                processed_response = process_input(user_input, placeholders1, placeholders2, placeholders3, placeholders4, placeholders5, placeholders6, placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
                 try:
@@ -194,9 +175,8 @@ def main():
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
             st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
-
-        # Rest of the code remains the same...
-
+        
+        # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
             st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
@@ -256,6 +236,7 @@ def main():
         
         else:
             st.info("Please enter your query and click 'Process Input' to start.")
+        # st.markdown('</div>', unsafe_allow_html=True)
     with tab3:
         uploaded_file = st.file_uploader("Upload your file", type=["pdf", "csv", "docx", "xlsx", "xls"], label_visibility="collapsed")
         if uploaded_file is not None:
