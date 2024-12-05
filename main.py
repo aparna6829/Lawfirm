@@ -5,11 +5,16 @@ from Third import load_file,get_summarized_response
 import re 
 from Five import get_response 
 import google.generativeai as genai
-from Evidence_2 import extract_text_from_image
+from Evidence_2 import analyze_image
 import requests
 import json
+import openai
 import io
 from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7
+from PIL import Image
+
+# # OpenAI API Key
+# openai.api_key = st.secrets["openai_api_key"]
 
 
 # Set page configuration
@@ -339,40 +344,25 @@ def main():
                 st.write(generated_answer)
                 
     with tab6:
-        image_file = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
-        if image_file:
-            # Display the uploaded image
-            st.image(image_file, caption="Uploaded Evidence", use_column_width=True)
-            
-            # Query Input
-            query = st.text_input("Enter your query here:")
-            
-            if query.strip():
-                with st.spinner("Analyzing the Evidence..."):
-                    try:
-                        # Extract text from the image using OCR
-                        extracted_text = extract_text_from_image(image_file)
+        # Image upload section
+        uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-                        # Configure Gemini API
-                        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+        if uploaded_image:
+            # Display uploaded image
+            image = Image.open(uploaded_image)
+            st.image(image, caption="Uploaded Image", use_column_width=True)
 
-                        # Construct the prompt with extracted text
-                        prompt_template = (
-                            "You are a legal assistance bot specializing in analyzing evidence. "
-                            "Analyze the following text extracted from the uploaded evidence and provide insights: {text}"
-                        )
-                        prompt = prompt_template.format(text=extracted_text)
+            # Analyze image
+            if st.button("Analyze Image"):
+                with st.spinner("Analyzing..."):
+                    analysis_result = analyze_image(image)
 
-                        # Initialize the model and generate response
-                        model = genai.GenerativeModel('gemini-1.5-flash')
-                        response = model.generate_content([prompt])
-
-                        # Display the response
-                        st.subheader("Analysis Results:")
-                        st.write(response.text)
-
-                    except Exception as e:
-                        st.error(f"An error occurred: {e}")
+                # Display results
+                if "error" in analysis_result:
+                    st.error(f"Error: {analysis_result['error']}")
+                else:
+                    st.success("Analysis Complete!")
+                    st.json(analysis_result)
                 
                     
 if __name__ == '__main__':
