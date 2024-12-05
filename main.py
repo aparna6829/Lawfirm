@@ -5,7 +5,7 @@ from Third import load_file,get_summarized_response
 import re 
 from Five import get_response 
 import google.generativeai as genai
-from Evidence_2 import encode_image
+from Evidence_2 import query_image
 import requests
 import json
 import io
@@ -27,6 +27,9 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # OpenAI API Key
 api_key = st.secrets["OPENAI_API_KEY"]
+# Configure your API key
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
 
 # Header container
 header = st.container()
@@ -326,43 +329,10 @@ def main():
             with st.expander("Uploaded Evidence"):
                 st.image(image_path)
             query = st.text_input("Enter your query here:")
-            if query.lower():
-                with st.spinner("Analyzing the Evidence"):
-                    prompt_template = "You are an legal assistance bot who is an expert in Analyzing the evidences and provide the complete insight about the evidence provided even without missing any minute detail"
-            
-                    # Getting the base64 string
-                    base64_image = encode_image(image_path)
-                    
-                    headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}"
-                    }
-                    
-                    payload = {
-                    "model": "gpt-4o-mini",
-                    "messages": [
-                        {
-                        "role": "user",
-                        "content": [
-                            {
-                            "type": "text",
-                            "text": prompt_template
-                            },
-                            {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}"
-                            }
-                            }
-                        ]
-                        }
-                    ],
-                    "max_tokens": 4096
-                    }
-                    
-                    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            
-                    st.write(response)
+            result = query_image(image_path, query)
+            print(f"Response: {result}\n")
+            st.write(result)
+
             
 
 if __name__ == '__main__':
