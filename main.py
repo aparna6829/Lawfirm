@@ -340,26 +340,43 @@ def main():
                 
     with tab6:
         # Path to your image
-        image_path = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
-        if image_path:
-            with st.expander("Uploaded Evidence"):
-                st.image(image_path)
-            query = st.text_input("Enter your query here:")
-            if query.lower():
-                with st.spinner("Analyzing the Evidence"):
-                    prompt_template = "You are an legal assistance bot who is an expert in Analyzing the evidences and provide the complete insight about the evidence provided even without missing any minute detail"
-            
-                    # Getting the base64 string
-                    base64_image = encode_image(image_path)
-               
-                 
-                    # Configure Gemini API
-                    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+        with st.expander("Upload Your Evidence"):
+            # Image Upload
+            image_file = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
+            if image_file:
+                # Display the uploaded image
+                st.image(image_file, caption="Uploaded Evidence", use_column_width=True)
                 
-                    # Initialize the model
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content([prompt_template,base64_image])
-                    st.write(response.text)
+                # Query Input
+                query = st.text_input("Enter your query here:")
+                
+                if query.strip():
+                    with st.spinner("Analyzing the Evidence..."):
+                        try:
+                            # Base64 encode the uploaded image
+                            base64_image = encode_image(image_file)
+
+                            # Configure Gemini API
+                            genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
+                            # Create the prompt
+                            prompt_template = (
+                                "You are a legal assistance bot who is an expert in analyzing evidence. "
+                                "Provide detailed insights on the uploaded evidence without missing any details. "
+                                "Here is the evidence in base64 format: {image_data}"
+                            )
+                            prompt = prompt_template.format(image_data=base64_image)
+
+                            # Initialize the model and generate response
+                            model = genai.GenerativeModel('gemini-1.5-flash')
+                            response = model.generate_content([prompt])
+
+                            # Display the response
+                            st.subheader("Analysis Results:")
+                            st.write(response.text)
+
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
                 
                     
 if __name__ == '__main__':

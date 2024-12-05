@@ -5,13 +5,11 @@ import google.generativeai as genai
 import streamlit as st
 
 
- 
 # Function to encode the image
-def encode_image(image_path):
-    image = Image.open(image_path)
+def encode_image(image_file):
+    """Encodes an uploaded image file to a base64 string."""
+    image = Image.open(image_file)
     buffered = io.BytesIO()
     image_format = image.format if image.format else 'PNG'  # Default to PNG if format is None
     image.save(buffered, format=image_format)
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
-
- 
