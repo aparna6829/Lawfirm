@@ -362,7 +362,7 @@ def main():
                     
                     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
             
-                    st.write(response.json()['choices'][0]['message']['content'])
+                    st.write(response)
             
 
 if __name__ == '__main__':
