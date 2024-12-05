@@ -351,38 +351,16 @@ def main():
             
                     # Getting the base64 string
                     base64_image = encode_image(image_path)
+               
+                 
+                    # Configure Gemini API
+                    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+                
+                    # Initialize the model
+                    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+                    response = model.generate_content([prompt_template,base64_image])
+                    st.write(response.text)
+                
                     
-                    headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}"
-                    }
-                    
-                    payload = {
-                    "model": "gpt-4o-mini",
-                    "messages": [
-                        {
-                        "role": "user",
-                        "content": [
-                            {
-                            "type": "text",
-                            "text": prompt_template
-                            },
-                            {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}"
-                            }
-                            }
-                        ]
-                        }
-                    ],
-                    "max_tokens": 4096
-                    }
-                    
-                    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            
-                    st.write(response)
-            
-
 if __name__ == '__main__':
     main()

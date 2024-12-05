@@ -1,8 +1,9 @@
 import base64
 from PIL import Image
 import io
+import google.generativeai as genai
+import streamlit as st
 
- 
 
  
 # Function to encode the image
