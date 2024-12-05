@@ -13,3 +13,4 @@ streamlit
 image
 pillow
 python-docx
+pytesseract
