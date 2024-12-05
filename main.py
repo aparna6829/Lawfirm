@@ -357,7 +357,7 @@ def main():
                     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
                 
                     # Initialize the model
-                    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     response = model.generate_content([prompt_template,base64_image])
                     st.write(response.text)
                 
