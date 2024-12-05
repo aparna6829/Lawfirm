@@ -5,7 +5,7 @@ from Third import load_file,get_summarized_response
 import re 
 from Five import get_response 
 import google.generativeai as genai
-from Evidence_2 import encode_image
+from Evidence_2 import extract_text_from_image
 import requests
 import json
 import io
@@ -339,44 +339,40 @@ def main():
                 st.write(generated_answer)
                 
     with tab6:
-        # Path to your image
-        with st.expander("Upload Your Evidence"):
-            # Image Upload
-            image_file = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
-            if image_file:
-                # Display the uploaded image
-                st.image(image_file, caption="Uploaded Evidence", use_column_width=True)
-                
-                # Query Input
-                query = st.text_input("Enter your query here:")
-                
-                if query.strip():
-                    with st.spinner("Analyzing the Evidence..."):
-                        try:
-                            # Base64 encode the uploaded image
-                            base64_image = encode_image(image_file)
+        image_file = st.file_uploader("Upload your evidence here:", type=["png", "jpg", "jpeg"])
+        if image_file:
+            # Display the uploaded image
+            st.image(image_file, caption="Uploaded Evidence", use_column_width=True)
+            
+            # Query Input
+            query = st.text_input("Enter your query here:")
+            
+            if query.strip():
+                with st.spinner("Analyzing the Evidence..."):
+                    try:
+                        # Extract text from the image using OCR
+                        extracted_text = extract_text_from_image(image_file)
 
-                            # Configure Gemini API
-                            genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+                        # Configure Gemini API
+                        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-                            # Create the prompt
-                            prompt_template = (
-                                "You are a legal assistance bot who is an expert in analyzing evidence. "
-                                "Provide detailed insights on the uploaded evidence without missing any details. "
-                                "Here is the evidence in base64 format: {image_data}"
-                            )
-                            prompt = prompt_template.format(image_data=base64_image)
+                        # Construct the prompt with extracted text
+                        prompt_template = (
+                            "You are a legal assistance bot specializing in analyzing evidence. "
+                            "Analyze the following text extracted from the uploaded evidence and provide insights: {text}"
+                        )
+                        prompt = prompt_template.format(text=extracted_text)
 
-                            # Initialize the model and generate response
-                            model = genai.GenerativeModel('gemini-1.5-flash')
-                            response = model.generate_content([prompt])
+                        # Initialize the model and generate response
+                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        response = model.generate_content([prompt])
 
-                            # Display the response
-                            st.subheader("Analysis Results:")
-                            st.write(response.text)
+                        # Display the response
+                        st.subheader("Analysis Results:")
+                        st.write(response.text)
 
-                        except Exception as e:
-                            st.error(f"An error occurred: {e}")
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")
                 
                     
 if __name__ == '__main__':

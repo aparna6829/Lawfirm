@@ -1,15 +1,14 @@
-import base64
 from PIL import Image
+import pytesseract  # OCR library
 import io
-import google.generativeai as genai
+import base64
 import streamlit as st
+import google.generativeai as genai
 
 
-# Function to encode the image
-def encode_image(image_file):
-    """Encodes an uploaded image file to a base64 string."""
+# Function to perform OCR on the uploaded image
+def extract_text_from_image(image_file):
+    """Extracts text from the uploaded image using OCR."""
     image = Image.open(image_file)
-    buffered = io.BytesIO()
-    image_format = image.format if image.format else 'PNG'  # Default to PNG if format is None
-    image.save(buffered, format=image_format)
-    return base64.b64encode(buffered.getvalue()).decode('utf-8')
+    text = pytesseract.image_to_string(image)
+    return text.strip()
