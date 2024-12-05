@@ -329,9 +329,10 @@ def main():
             with st.expander("Uploaded Evidence"):
                 st.image(image_path)
             query = st.text_input("Enter your query here:")
-            result = query_image(image_path, query)
-            print(f"Response: {result}\n")
-            st.write(result)
+            if query:
+                result = query_image(image_path, query)
+                print(f"Response: {result}\n")
+                st.write(result)
 
             
 
