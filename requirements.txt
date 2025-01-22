@@ -15,6 +15,4 @@ pillow
 python-docx
 pytesseract
 llama-index 
-llama-index-indices-managed-llama-cloud
-llama-cloud 
 llama-parse 
