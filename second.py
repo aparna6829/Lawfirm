@@ -65,15 +65,19 @@ def process_input(user_input, placeholders1, placeholders2,placeholders3,placeho
  
     Based on the user input, fill in the placeholders and provide definitions for relevant legal terms.
     Structure your response exactly like this, replacing the examples with actual content:
-    [
-      "document": "Master Service Agreement" or "New York Agreement" or "Data License Agreement" or "Professional service agreement" or "asset purchase agreement" or "Safe simple agreement for future Equity" or "Founders stock purchase agreement",
-      "placeholders": [
-          "PLACEHOLDER1": "Value1",
-          "PLACEHOLDER2": "Value2",
-          "PLACEHOLDER3": "MISSING"
+    [[
+        "document": "Master Service Agreement" or "New York Agreement" or "Data License Agreement" or "Professional Service Agreement" or "Asset Purchase Agreement" or "Safe Simple Agreement for Future Equity" or "Founders Stock Purchase Agreement",
+        "placeholders": [
+            [["PLACEHOLDER1": "Value1"]],
+            [["PLACEHOLDER2": "Value2"]],
+            [["PLACEHOLDER3": "MISSING"]]
+        ],
+        "definitions": [
+            [["Term1": "Definition1"]],
+            [["Term2": "Definition2"]]
         ]
-    ]
- 
+    ]]
+
     User input: {content}
    
     Response:
