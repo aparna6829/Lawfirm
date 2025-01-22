@@ -175,13 +175,13 @@ def main():
                 processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
-                print(fresponse)
+                st.write(fresponse)
                 try:
                     fresponse = fresponse.split("```json")[1].split("```")[0]
                     fresponse = json.loads(fresponse)
-                    print("one")
+                    st.write("one")
                 except:
-                    print("two")
+                    st.write("two")
                     fresponse = json.loads(fresponse)
                 st.session_state.state['document_type'] = fresponse.get("document", "")
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
