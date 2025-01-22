@@ -16,3 +16,4 @@ python-docx
 pytesseract
 llama-index 
 llama-parse 
+llama-index-readers-file
