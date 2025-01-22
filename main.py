@@ -185,10 +185,11 @@ def main():
                 except:
                     # st.write("two")
                     fresponse = json.loads(fresponse)
+                
                 st.session_state.state['document_type'] = fresponse.get("document", "")
-                st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
+                st.session_state.state['placeholders'] = fresponse.get("placeholders", [])
                 st.session_state.state['processed'] = True
-            st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
+        st.success("Input processed successfully!")
         
         # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
