@@ -10,11 +10,7 @@ import requests
 import json
 import io
 from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7
-from llama_index.core.workflow import Event, StartEvent, StopEvent, Context, Workflow, step
-import nest_asyncio
-from typing import List, Optional
-import asyncio
-
+from compliance import run_workflow
 
 
 # Set page configuration
@@ -97,6 +93,31 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True
+)
+
+from compliance import ContractReviewWorkflow, create_index
+from pathlib import Path
+from llama_index.core.retrievers import BaseRetriever
+from llama_index.llms.openai import OpenAI
+from llama_parse import LlamaParse
+
+llm = OpenAI(model="gpt-4o-mini", api_key=st.secrets["OPENAI_API_KEY"])
+parser = LlamaParse(result_type="markdown", api_key=st.secrets["LLAMA_KEY"])  # Replace with your API key
+
+# Define paths
+STORAGE_CACHE_DIR = Path('./Contractcache')
+DATA_PATH = Path(r'data')
+# Ensure directories exist
+STORAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+index = create_index(DATA_PATH, STORAGE_CACHE_DIR)
+retriever = index.as_retriever(similarity_top_k=2)
+
+workflow = ContractReviewWorkflow(
+parser=parser,
+guideline_retriever=retriever,
+llm=llm,
+# verbose=True,
+timeout=None,  # don't worry about timeout to make sure it completes
 )
 
 # Main function
@@ -343,118 +364,61 @@ def main():
         import logging
         from pathlib import Path
         import tempfile
-        from llama_index.llms.openai import OpenAI
-        # Define paths
-        STORAGE_CACHE_DIR = Path('./Contractcache')
-        DATA_PATH = Path(r'data')
-
-        # Ensure directories exist
-        STORAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        llm = OpenAI(model="gpt-4o-mini", api_key=st.secrets["OPENAI_API_KEY"])
-
         # Initialize logging
-        from llama_parse import LlamaParse
-        from compliance import ContractReviewWorkflow, LogEvent, create_index
-
-        parser = LlamaParse(result_type="markdown", api_key=st.secrets["LLAMA_KEY"])  # Replace with your API key
-        nest_asyncio.apply()
-        asyncio.set_event_loop(asyncio.new_event_loop())
         logging.basicConfig(level=logging.INFO)
-        index = create_index(DATA_PATH, STORAGE_CACHE_DIR)
-        retriever = index.as_retriever(similarity_top_k=2)
-        workflow = ContractReviewWorkflow(
-        parser=parser,
-        guideline_retriever=retriever,
-        llm=llm,
-        # verbose=True,
-        timeout=None,  # don't worry about timeout to make sure it completes
-    )
 
-
-        async def run_workflow_async(workflow: Workflow, contract_path: Path) -> dict:
-            """Asynchronous function to run the workflow"""
-            print(f"Starting workflow for contract: {contract_path}")
-            handler = workflow.run(contract_path=str(contract_path))
-            
-            # Handle event streaming
-            async for event in handler.stream_events():
-                if isinstance(event, LogEvent):
-                    if event.delta:
-                        print(event.msg, end="")
-                    else:
-                        print(event.msg)
-            
-            # Get final results
-            return await handler
-
-        def run_workflow(workflow: Workflow, contract_path: Path) -> dict:
-            """Synchronous wrapper for running the workflow"""
-            # Apply nest_asyncio to allow nested event loops
-            nest_asyncio.apply()
-            
-            # Create new event loop
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
+        
+        
+        # Setup workflow
+        uploaded_file = st.file_uploader("Upload Contract", type=["md", "pdf"])
+        
+        if uploaded_file is not None:
             try:
-                # Run the async workflow in the event loop
-                return loop.run_until_complete(run_workflow_async(workflow, contract_path))
-            finally:
-                # Clean up
-                loop.close()
-
-                
-                
-                # Setup workflow
-                uploaded_file = st.file_uploader("Upload Contract", type=["md", "pdf"])
-                
-                if uploaded_file is not None:
-                    try:
-                        # Create a temporary directory to store the uploaded file
-                        with tempfile.TemporaryDirectory() as temp_dir:
-                            # Create a path for the temporary file
-                            temp_file_path = Path(temp_dir) / uploaded_file.name
+                # Create a temporary directory to store the uploaded file
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    # Create a path for the temporary file
+                    temp_file_path = Path(temp_dir) / uploaded_file.name
+                    
+                    # Write the uploaded file content to the temporary file
+                    with open(temp_file_path, "wb") as f:
+                        f.write(uploaded_file.getvalue())
+                    
+                    with st.spinner("Running Compliance Workflow..."):
+                        # Run the workflow with the temporary file path
+                        response_dict = run_workflow(workflow, temp_file_path)
+                        # st.write(response_dict)
+                        # Display results
+                        st.success("Analysis Complete!")
+                        
+                        # Show overall compliance status
+                        if response_dict:
+                            st.write("✅ Contract is compliant")
                             
-                            # Write the uploaded file content to the temporary file
-                            with open(temp_file_path, "wb") as f:
-                                f.write(uploaded_file.getvalue())
-                            
-                            with st.spinner("Running Compliance Workflow..."):
-                                # Run the workflow with the temporary file path
-                                response_dict = run_workflow(workflow, temp_file_path)
-                                # st.write(response_dict)
-                                # Display results
-                                st.success("Analysis Complete!")
-                                
-                                # Show overall compliance status
-                                if response_dict:
-                                    st.write("✅ Contract is compliant")
-                                    
-                                else:
-                                    st.write("❌ Contract has compliance issues")
-                                
-                                # Display detailed results in expandable sections
-                                with st.expander("View Detailed Results"):
-                                    st.subheader("Compliance Report")
-                                    # st.write(str(response_dict["report"]))
-                                    st.write("**Vendor Name:**", response_dict["report"].vendor_name)
-                                    st.write("**Overall Compliance:**", response_dict["report"].overall_compliant)
-                                    st.write("**Summary Notes:**", response_dict["report"].summary_notes)
+                        else:
+                            st.write("❌ Contract has compliance issues")
+                        
+                        # Display detailed results in expandable sections
+                        with st.expander("View Detailed Results"):
+                            st.subheader("Compliance Report")
+                            # st.write(str(response_dict["report"]))
+                            st.write("**Vendor Name:**", response_dict["report"].vendor_name)
+                            st.write("**Overall Compliance:**", response_dict["report"].overall_compliant)
+                            st.write("**Summary Notes:**", response_dict["report"].summary_notes)
 
-                                    
-                                    if response_dict["non_compliant_results"]:
-                                        st.subheader("Non-Compliant Clauses")
-                                        # st.write(response_dict["non_compliant_results"])
-                                        for result in response_dict["non_compliant_results"]:
-                                            st.write("**Clause:**", result.clause_text)
-                                            st.write("**Relevant Guideline:**", result.matched_guideline.guideline_text)
-                                            st.write("**Similarity Score:**", result.matched_guideline.similarity_score)
-                                            st.write("**Relevance Explanation:**", result.matched_guideline.relevance_explanation)
-                                            st.write("**Notes:**", result.notes)
-                                    
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-                        logging.error(f"Error processing file: {str(e)}", exc_info=True)
+                            
+                            if response_dict["non_compliant_results"]:
+                                st.subheader("Non-Compliant Clauses")
+                                # st.write(response_dict["non_compliant_results"])
+                                for result in response_dict["non_compliant_results"]:
+                                    st.write("**Clause:**", result.clause_text)
+                                    st.write("**Relevant Guideline:**", result.matched_guideline.guideline_text)
+                                    st.write("**Similarity Score:**", result.matched_guideline.similarity_score)
+                                    st.write("**Relevance Explanation:**", result.matched_guideline.relevance_explanation)
+                                    st.write("**Notes:**", result.notes)
+                            
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+                logging.error(f"Error processing file: {str(e)}", exc_info=True)
 
 
 

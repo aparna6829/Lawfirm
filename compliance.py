@@ -23,12 +23,18 @@ nest_asyncio.apply()
 
 
 
+llm = OpenAI(model="gpt-4o-mini", api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configure logging
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.INFO)
 
+# Define paths
+STORAGE_CACHE_DIR = Path('./Contractcache')
+DATA_PATH = Path(r'data')
 
+# Ensure directories exist
+STORAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Initialize the embedding model
 embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -47,7 +53,8 @@ def create_index(data_path: Path, cache_dir: Path) -> VectorStoreIndex:
     print(f"Index created and saved to: {cache_dir}")
     return index
 
-
+index = create_index(DATA_PATH, STORAGE_CACHE_DIR)
+retriever = index.as_retriever(similarity_top_k=2)
 
 # Model definitions
 class ContractClause(BaseModel):
@@ -365,3 +372,56 @@ Please find the relevant guideline from {ev.vendor_name} that aligns with the fo
         )
 
         return StopEvent(result={"report": compliance_report, "non_compliant_results": non_compliant_results})
+
+
+parser = LlamaParse(result_type="markdown", api_key=st.secrets["LLAMA_KEY"])  # Replace with your API key
+
+
+
+
+
+
+nest_asyncio.apply()
+asyncio.set_event_loop(asyncio.new_event_loop())
+
+workflow = ContractReviewWorkflow(
+    parser=parser,
+    guideline_retriever=retriever,
+    llm=llm,
+    # verbose=True,
+    timeout=None,  # don't worry about timeout to make sure it completes
+)
+
+
+async def run_workflow_async(workflow: Workflow, contract_path: Path) -> dict:
+    """Asynchronous function to run the workflow"""
+    print(f"Starting workflow for contract: {contract_path}")
+    handler = workflow.run(contract_path=str(contract_path))
+    
+    # Handle event streaming
+    async for event in handler.stream_events():
+        if isinstance(event, LogEvent):
+            if event.delta:
+                print(event.msg, end="")
+            else:
+                print(event.msg)
+    
+    # Get final results
+    return await handler
+
+def run_workflow(workflow: Workflow, contract_path: Path) -> dict:
+    """Synchronous wrapper for running the workflow"""
+    # Apply nest_asyncio to allow nested event loops
+    nest_asyncio.apply()
+    
+    # Create new event loop
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    try:
+        # Run the async workflow in the event loop
+        return loop.run_until_complete(run_workflow_async(workflow, contract_path))
+    finally:
+        # Clean up
+        loop.close()
+
