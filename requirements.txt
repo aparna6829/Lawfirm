@@ -14,6 +14,6 @@ image
 pillow
 python-docx
 pytesseract
-llama-index 
-llama-parse 
-llama-index-readers-file
+llama-index==0.12.11
+llama-parse==0.5.19
+# llama-index-readers-file
