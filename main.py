@@ -175,10 +175,11 @@ def main():
                 processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{{').replace(']','}}')
-                # st.write(fresponse)
+                st.write(fresponse)
                 try:
                     fresponse = fresponse.split("```json")[1].split("```")[0]
                     fresponse = json.loads(fresponse)
+                    st.write(fresponse)
                     # st.write("one")
                 except:
                     # st.write("two")
