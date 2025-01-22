@@ -176,13 +176,14 @@ def main():
                 processed_response = processed_response.content
                 fresponse = processed_response.replace('[','{').replace(']','}')
                 st.write(fresponse)
-                # try:
-                #     # fresponse = fresponse.split("```json")[1].split("```")[0]
-                #     fresponse = json.loads(fresponse)
-                #     st.write("one")
-                # except:
-                #     st.write("two")
-                #     fresponse = json.loads(fresponse)
+                try:
+                    # fresponse = fresponse.split("```json")[1].split("```")[0]
+                    fresponse = json.loads(fresponse)
+                    st.write("one")
+                except:
+                    st.write("two")
+                    fresponse = json.loads(fresponse)
+                    st.write(fresponse)
                 st.session_state.state['document_type'] = fresponse.get("document", "")
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
