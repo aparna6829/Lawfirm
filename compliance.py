@@ -11,11 +11,11 @@ from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageCon
 from llama_index.core.schema import Document
 from llama_index.core.retrievers import BaseRetriever
 from llama_index.core.prompts import ChatPromptTemplate
+from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_parse import LlamaParse
 from pydantic import BaseModel, Field
 import streamlit as st
-from langchain_community.llms.openai import OpenAI
 
 asyncio.set_event_loop(asyncio.new_event_loop())
 nest_asyncio.apply()
