@@ -97,15 +97,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-def clean_json_string(json_str):
-    """
-    Clean up potentially malformed JSON string by removing extra brackets
-    and ensuring proper JSON structure.
-    """
-    json_str = json_str.strip()
-    if json_str.startswith('{{') and json_str.endswith('}}'):
-        json_str = json_str[1:-1]
-    return json_str
 
 
 
@@ -183,42 +174,18 @@ def main():
             with st.spinner("Processing your input..."):
                 processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
-                fresponse = processed_response.replace('[','{').replace(']','}')
-                st.write(fresponse)
-                # try:
-                #     fresponse = fresponse.split("```json")[1].split("```")[0]
-                #     fresponse = json.loads(fresponse)
-                #     st.write("one")
-                # except:
-                #     st.write("two")
-                #     fresponse = json.loads(fresponse)
-                #     st.write(fresponse)
-            try:
-                # First try to extract JSON from markdown code blocks if present
-                if "```json" in processed_response:
-                    json_str = processed_response.split("```json")[1].split("```")[0]
-                else:
-                    json_str = processed_response
-                
-                # Clean and parse the JSON
-                cleaned_json = clean_json_string(json_str)
-                parsed_response = json.loads(cleaned_json)
-                
-                # Update session state
-                st.session_state.state['document_type'] = parsed_response.get("document", "")
-                st.session_state.state['placeholders'] = parsed_response.get("placeholders", {})
+                fresponse = processed_response.replace('[','{{').replace(']','}}')
+                # st.write(fresponse)
+                try:
+                    fresponse = fresponse.split("```json")[1].split("```")[0]
+                    fresponse = json.loads(fresponse)
+                    # st.write("one")
+                except:
+                    # st.write("two")
+                    fresponse = json.loads(fresponse)
+                st.session_state.state['document_type'] = fresponse.get("document", "")
+                st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
                 st.session_state.state['processed'] = True
-                
-                st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
-            
-            except Exception as e:
-                st.error(f"Error processing input: {str(e)}")
-                st.write("Raw response for debugging:", processed_response)
-                return
-
-                # st.session_state.state['document_type'] = fresponse.get("document", "")
-                # st.session_state.state['placeholders'] = fresponse.get("placeholders", {})
-                # st.session_state.state['processed'] = True
             st.success(f"Input processed successfully for {st.session_state.state['document_type']}!")
         
         # Display placeholders and definitions side by side
