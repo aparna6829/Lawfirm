@@ -1,4 +1,5 @@
 import streamlit as st
+from llama_index.core.workflow import Event, StartEvent, StopEvent, Context, Workflow, step
 # from second import second_tab
 from Fourth import get_summarized_response,query_index
 from Third import load_file,get_summarized_response 
@@ -10,7 +11,7 @@ import requests
 import json
 import io
 from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7
-from compliance import run_workflow
+from compliance import run_workflow, compliance_workflow
 
 
 # Set page configuration
@@ -95,30 +96,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-from compliance import ContractReviewWorkflow, create_index
-from pathlib import Path
-from llama_index.core.retrievers import BaseRetriever
-from llama_index.llms.openai import OpenAI
-from llama_parse import LlamaParse
 
-llm = OpenAI(model="gpt-4o-mini", api_key=st.secrets["OPENAI_API_KEY"])
-parser = LlamaParse(result_type="markdown", api_key=st.secrets["LLAMA_KEY"])  # Replace with your API key
-
-# Define paths
-STORAGE_CACHE_DIR = Path('./Contractcache')
-DATA_PATH = Path(r'data')
-# Ensure directories exist
-STORAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-index = create_index(DATA_PATH, STORAGE_CACHE_DIR)
-retriever = index.as_retriever(similarity_top_k=2)
-
-workflow = ContractReviewWorkflow(
-parser=parser,
-guideline_retriever=retriever,
-llm=llm,
-# verbose=True,
-timeout=None,  # don't worry about timeout to make sure it completes
-)
 
 
 # Main function
@@ -386,7 +364,7 @@ def main():
                     
                     with st.spinner("Running Compliance Workflow..."):
                         # Run the workflow with the temporary file path
-                        response_dict = run_workflow(workflow, temp_file_path)
+                        response_dict = run_workflow(compliance_workflow, temp_file_path)
                         # st.write(response_dict)
                         # Display results
                         st.success("Analysis Complete!")

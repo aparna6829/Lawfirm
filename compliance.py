@@ -384,7 +384,7 @@ parser = LlamaParse(result_type="markdown", api_key=st.secrets["LLAMA_KEY"])  # 
 nest_asyncio.apply()
 asyncio.set_event_loop(asyncio.new_event_loop())
 
-workflow = ContractReviewWorkflow(
+compliance_workflow = ContractReviewWorkflow(
     parser=parser,
     guideline_retriever=retriever,
     llm=llm,
@@ -393,10 +393,10 @@ workflow = ContractReviewWorkflow(
 )
 
 
-async def run_workflow_async(workflow: Workflow, contract_path: Path) -> dict:
+async def run_workflow_async(compliance_workflow: Workflow, contract_path: Path) -> dict:
     """Asynchronous function to run the workflow"""
     print(f"Starting workflow for contract: {contract_path}")
-    handler = workflow.run(contract_path=str(contract_path))
+    handler = compliance_workflow.run(contract_path=str(contract_path))
     
     # Handle event streaming
     async for event in handler.stream_events():
@@ -409,7 +409,7 @@ async def run_workflow_async(workflow: Workflow, contract_path: Path) -> dict:
     # Get final results
     return await handler
 
-def run_workflow(workflow: Workflow, contract_path: Path) -> dict:
+def run_workflow(compliance_workflow: Workflow, contract_path: Path) -> dict:
     """Synchronous wrapper for running the workflow"""
     # Apply nest_asyncio to allow nested event loops
     nest_asyncio.apply()
@@ -420,7 +420,7 @@ def run_workflow(workflow: Workflow, contract_path: Path) -> dict:
     
     try:
         # Run the async workflow in the event loop
-        return loop.run_until_complete(run_workflow_async(workflow, contract_path))
+        return loop.run_until_complete(run_workflow_async(compliance_workflow, contract_path))
     finally:
         # Clean up
         loop.close()
