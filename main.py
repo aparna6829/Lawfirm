@@ -168,233 +168,90 @@ def main():
             }
         
         
-        # user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
-        # if user_input and st.button("Process Input"):
-        #     st.session_state.state['user_input'] = user_input
-        #     with st.spinner("Processing your input..."):
-        #         processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
-        #         processed_response = processed_response.content
-        #         st.write(processed_response)
-        #         fresponse = processed_response.replace('[[', '{').replace(']]', '}')
-        #         st.write(fresponse)
-        #         try:
-        #             fresponse = fresponse.split("```json")[1].split("```")[0]
-        #             fresponse = json.loads(fresponse)
-        #             st.write(fresponse)
-        #             # st.write("one")
-        #         except:
-        #             # st.write("two")
-        #             fresponse = json.loads(fresponse)
-                
-        #         st.session_state.state['document_type'] = fresponse.get("document", "")
-        #         st.session_state.state['placeholders'] = fresponse.get("placeholders", [])
-        #         st.session_state.state['processed'] = True
-        # st.success("Input processed successfully!")
-        
-        # # Display placeholders and definitions side by side
-        # if st.session_state.state['processed']:
-        #     st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
-        #     st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
-        #     for key, value in st.session_state.state['placeholders'].items():
-        #         if value == "MISSING":
-        #             user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
-        #                                         value=st.session_state.state['collected_details'].get(key, ""))
-        #             st.session_state.state['collected_details'][key] = user_detail
-        #         else:
-        #             st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
-        
-        #     if st.button("Update Missing Details"):
-        #         for key, value in st.session_state.state['collected_details'].items():
-        #             if value:
-        #                 st.session_state.state['placeholders'][key] = value
-        #         st.success("Missing Details updated successfully!")
-        
-        #     # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
-        #     if st.button("Generate Final Document"):
-        #         with st.spinner("Generating document..."):
-        #             doc_paths = {
-        #             "master service agreement": doc2_path,
-        #             "new york agreement": doc1_path,
-        #             "data license agreement": doc3_path,
-        #             "professional service agreement": doc4_path,
-        #             "asset purchase agreement": doc5_path,
-        #             "safe simple agreement for future equity" : doc6_path,
-        #             "founders stock purchase agreement" : doc7_path
-        #         }
-                
-        #             document_type = st.session_state.state['document_type'].lower()
-                
-        #             doc_path = doc_paths.get(document_type.lower())
-        #             if doc_path:
-        #                 st.session_state.state['final_doc'] = add_content_to_document(
-        #                     doc_path,
-        #                     st.session_state.state['placeholders']
-        #                 )
-        #                 st.session_state.state['document_generated'] = True
-                    
-        #             else:
-        #                 st.error(f"Unknown document type: {st.session_state.state['document_type']}")
-        #         st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
-        #     if st.session_state.state['document_generated']:
-        #         bio = io.BytesIO()
-        #         st.session_state.state['final_doc'].save(bio)
-        #         st.download_button(
-        #             label="Download Final Document",
-        #             data=bio.getvalue(),
-        #             file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
-        #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        #         )
-        
-        #     # Display the final content of placeholders and definitions
-        #     if st.checkbox("Show final content"):
-        #         st.json(st.session_state.state['placeholders'])
-        
-        # else:
-        #     st.info("Please enter your query and click 'Process Input' to start.")
-        # # st.markdown('</div>', unsafe_allow_html=True)
-        def set_query(query):
-            st.session_state.query_input = query
-            st.rerun()
-        
-        if "query_input" not in st.session_state:
-            st.session_state.query_input = ""
-        
-
-
-        query = st.text_area("Enter your query to fill the details:", value=st.session_state.query_input)
-
-        st.write("Sample Prompts:")
-
-        col1, col2 = st.columns([0.7,0.3])
-        with col1:
-            if st.button("Please create a Master Service Agreement with the following details: On March 18, 2024, Promptora Inc., with its principal place of business at 635 Main Street, San Francisco, CA, will engage with John Smith, whose jurisdiction is New York, NY, and whose principal place of business is located at 123 Broadway, New York, NY."):
-                set_query("Please create a Master Service Agreement with the following details: On March 18, 2024, Promptora Inc., with its principal place of business at 635 Main Street, San Francisco, CA, will engage with John Smith, whose jurisdiction is New York, NY, and whose principal place of business is located at 123 Broadway, New York, NY.")
-        # with col2:
-                
-        #     if st.button("Please fill in the details for a Professional Service Agreement: Effective June 1, 2024, ConsultTech Solutions, based in Austin, Texas, will provide professional services to DataDrive Corporation, headquartered in Seattle, Washington, for a period of 12 months."):
-        #         set_query("Please fill in the details for a Professional Service Agreement: Effective June 1, 2024, ConsultTech Solutions, based in Austin, Texas, will provide professional services to DataDrive Corporation, headquartered in Seattle, Washington, for a period of 12 months.")
-
-
-        with col2:
-            if st.button("Please fill in the details for this New York agreement: On March 18, 2024, the company Promptora Inc. will engage the consultant Sarah Johnson."):
-                set_query("Please fill in the details for this New York agreement: On March 18, 2024, the company Promptora Inc. will engage the consultant Sarah Johnson.")
-                
-
-                    
-        # Process input
-        if query and st.button("Process Input"):
-            
-            st.session_state.state['user_input'] = query
+        user_input = st.text_area("Enter your query to fill the details:", value=st.session_state.state['user_input'])
+        if user_input and st.button("Process Input"):
+            st.session_state.state['user_input'] = user_input
             with st.spinner("Processing your input..."):
-                processed_response = process_input(query, placeholders1, placeholders2, placeholders3, placeholders4, placeholders5, placeholders6, placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
                 processed_response = processed_response.content
-                
+                st.write(processed_response)
                 fresponse = processed_response.replace('[[', '{').replace(']]', '}')
+                st.write(fresponse)
                 try:
                     fresponse = fresponse.split("```json")[1].split("```")[0]
                     fresponse = json.loads(fresponse)
+                    st.write(fresponse)
+                    # st.write("one")
                 except:
+                    # st.write("two")
                     fresponse = json.loads(fresponse)
                 
                 st.session_state.state['document_type'] = fresponse.get("document", "")
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", [])
-                st.session_state.state['definitions'] = fresponse.get("definitions", [])
                 st.session_state.state['processed'] = True
             st.success("Input processed successfully!")
-
-        # Display placeholders and definitions
+        
+        # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
-                for i, placeholder  in enumerate(st.session_state.state['placeholders']):
-                    for key, value in placeholder.items():
-                        if value == "MISSING":
-                            user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=f"missing_{i}_{key}",
-                                                        value=st.session_state.state['collected_details'].get(key, ""))
-                            st.session_state.state['collected_details'][key] = user_detail
-                        else:
-                            st.text_input(f"{key}:",key=f"filled_{i}_{key}", value=value, disabled=True)
-                        
-
-            with col2:
-                st.markdown('<p class="subheader">Definitions</p>', unsafe_allow_html=True)
-                updated_definitions = []
-                for i,definition in enumerate( st.session_state.state['definitions']):
-                    updated_definition = {}
-                    for term, desc in definition.items():
-                        updated_desc = st.text_area(f"{term}:", value=desc, height=100, key=f"def_{i}_{term}")
-                        updated_definition[term] = updated_desc
-                    updated_definitions.append(updated_definition)
-                
-            if st.button("Update Details and Definitions"):
-                updated_placeholders = []
-                for placeholder in st.session_state.state['placeholders']:
-                    updated_placeholder = {}
-                    for key, value in placeholder.items():
-                        if value == "MISSING" and key in st.session_state.state['collected_details']:
-                            updated_placeholder[key] = st.session_state.state['collected_details'][key]
-                        else:
-                            updated_placeholder[key] = value
-                    updated_placeholders.append(updated_placeholder)
-                
-                st.session_state.state['placeholders'] = updated_placeholders
-                st.session_state.state['definitions'] = updated_definitions
-                st.success("Details and definitions updated successfully!")
-
-            st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
+            st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
+            for key, value in st.session_state.state['placeholders'].items():
+                if value == "MISSING":
+                    user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
+                                                value=st.session_state.state['collected_details'].get(key, ""))
+                    st.session_state.state['collected_details'][key] = user_detail
+                else:
+                    st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
+        
+            if st.button("Update Missing Details"):
+                for key, value in st.session_state.state['collected_details'].items():
+                    if value:
+                        st.session_state.state['placeholders'][key] = value
+                st.success("Missing Details updated successfully!")
+        
+            # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
             if st.button("Generate Final Document"):
                 with st.spinner("Generating document..."):
                     doc_paths = {
-                        "New York Agreement": doc1_path,
-                        "Master Service Agreement": doc2_path,
-                        "Data License Agreement": doc3_path,
-                        "Professional Service Agreement": doc4_path,
-                        "Asset Purchase Agreement": doc5_path,
-                        "Safe Simple Agreement for Future Equity": doc6_path,
-                        "Founders Stock Purchase Agreement": doc7_path
-                    }
-                    document_type = st.session_state.state['document_type']
-                    doc_path = doc_paths.get(document_type)
-                    
+                    "master service agreement": doc2_path,
+                    "new york agreement": doc1_path,
+                    "data license agreement": doc3_path,
+                    "professional service agreement": doc4_path,
+                    "asset purchase agreement": doc5_path,
+                    "safe simple agreement for future equity" : doc6_path,
+                    "founders stock purchase agreement" : doc7_path
+                }
+                
+                    document_type = st.session_state.state['document_type'].lower()
+                
+                    doc_path = doc_paths.get(document_type.lower())
                     if doc_path:
-                        placeholders = {k: v for d in st.session_state.state['placeholders'] for k, v in d.items()}
-                        definitions = {k: v for d in st.session_state.state['definitions'] for k, v in d.items()}
                         st.session_state.state['final_doc'] = add_content_to_document(
-                            doc_path, 
-                            placeholders, 
-                            definitions,
-                            document_type
+                            doc_path,
+                            st.session_state.state['placeholders']
                         )
                         st.session_state.state['document_generated'] = True
-                        st.success("Final document generated with all missing details and definitions.")
+                    
                     else:
-                        st.error(f"No document path found for document type: {document_type}")
-
+                        st.error(f"Unknown document type: {st.session_state.state['document_type']}")
+                st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
             if st.session_state.state['document_generated']:
                 bio = io.BytesIO()
                 st.session_state.state['final_doc'].save(bio)
                 st.download_button(
                     label="Download Final Document",
                     data=bio.getvalue(),
-                    file_name="final_document.docx",
+                    file_name=f"{st.session_state.state['document_type'].replace(' ', '_').lower()}_final.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
-
+        
             # Display the final content of placeholders and definitions
             if st.checkbox("Show final content"):
-                # for x in st.session_state.state['placeholders']:
-                #     st.json(x)
                 st.json(st.session_state.state['placeholders'])
-                st.json(st.session_state.state['definitions'])
-
+        
         else:
             st.info("Please enter your query and click 'Process Input' to start.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
+        # st.markdown('</div>', unsafe_allow_html=True)
     with tab3:
         uploaded_file = st.file_uploader("Upload your file", type=["pdf", "csv", "docx", "xlsx", "xls"], label_visibility="collapsed")
         if uploaded_file is not None:
