@@ -31,7 +31,7 @@ _logger.setLevel(logging.INFO)
 
 # Define paths
 STORAGE_CACHE_DIR = Path('./Contractcache')
-DATA_PATH = Path(r'C:\Users\aipro\OneDrive\Documents\GitHub\Lawfirm\data')
+DATA_PATH = Path(r'data')
 
 # Ensure directories exist
 STORAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
