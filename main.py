@@ -235,17 +235,19 @@ def main():
                 
                     document_type = st.session_state.state['document_type'].lower()
                 
-                    doc_path = doc_paths.get(document_type.lower())
+                    doc_path = doc_paths.get(document_type)
+            
                     if doc_path:
+                        placeholders = {k: v for d in st.session_state.state['placeholders'] for k, v in d.items()}
                         st.session_state.state['final_doc'] = add_content_to_document(
-                            doc_path,
-                            st.session_state.state['placeholders']
+                            doc_path, 
+                            placeholders, 
+                            document_type
                         )
                         st.session_state.state['document_generated'] = True
-                    
+                        st.success("Final document generated successfully!")
                     else:
-                        st.error(f"Unknown document type: {st.session_state.state['document_type']}")
-                st.success(f"Final document generated for {st.session_state.state['document_type']} with all missing details.")
+                        st.error(f"No document path found for document type: {document_type}")
             if st.session_state.state['document_generated']:
                 bio = io.BytesIO()
                 st.session_state.state['final_doc'].save(bio)
