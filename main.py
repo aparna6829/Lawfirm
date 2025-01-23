@@ -239,11 +239,7 @@ def main():
             
                     if doc_path:
                         placeholders = {k: v for d in st.session_state.state['placeholders'] for k, v in d.items()}
-                        st.session_state.state['final_doc'] = add_content_to_document(
-                            doc_path, 
-                            placeholders, 
-                            document_type
-                        )
+                        st.session_state.state['final_doc'] = add_content_to_document(doc_path, placeholders)
                         st.session_state.state['document_generated'] = True
                         st.success("Final document generated successfully!")
                     else:
