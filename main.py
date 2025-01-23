@@ -194,17 +194,18 @@ def main():
         # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
-            st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
-            for i, placeholder  in enumerate(st.session_state.state['placeholders']):
-                for key, value in placeholder.items():
+            col1, col2 = st.columns(2)
 
-                    
-                    if value == "MISSING":
-                        user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
-                                                    value=st.session_state.state['collected_details'].get(key, ""))
-                        st.session_state.state['collected_details'][key] = user_detail
-                    else:
-                        st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
+            with col1:
+                st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
+                for i, placeholder  in enumerate(st.session_state.state['placeholders']):
+                    for key, value in placeholder.items():
+                        if value == "MISSING":
+                            user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=f"missing_{i}_{key}",
+                                                        value=st.session_state.state['collected_details'].get(key, ""))
+                            st.session_state.state['collected_details'][key] = user_detail
+                        else:
+                            st.text_input(f"{key}:",key=f"filled_{i}_{key}", value=value, disabled=True)
         
             if st.button("Update Missing Details"):
                 updated_placeholders = []
