@@ -195,14 +195,16 @@ def main():
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
             st.markdown('<p class="subheader">Missing Details</p>', unsafe_allow_html=True)
-            for key, value in st.session_state.state['placeholders']:
-                
-                if value == "MISSING":
-                    user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
-                                                value=st.session_state.state['collected_details'].get(key, ""))
-                    st.session_state.state['collected_details'][key] = user_detail
-                else:
-                    st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
+            for i, placeholder  in enumerate(st.session_state.state['placeholders']):
+                for key, value in placeholder.items():
+
+                    
+                    if value == "MISSING":
+                        user_detail = st.text_input(f"{key.replace('_', ' ')}:", key=key,
+                                                    value=st.session_state.state['collected_details'].get(key, ""))
+                        st.session_state.state['collected_details'][key] = user_detail
+                    else:
+                        st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
         
             if st.button("Update Missing Details"):
                 for key, value in st.session_state.state['collected_details'].items():
