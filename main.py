@@ -207,11 +207,18 @@ def main():
                         st.text_input(f"{key.replace('_', ' ')}:", value=value, disabled=True)
         
             if st.button("Update Missing Details"):
-                for key, value in st.session_state.state['collected_details'].items():
-                    if value:
-                        st.session_state.state['placeholders'][key] = value
-                st.success("Missing Details updated successfully!")
-        
+                updated_placeholders = []
+                for placeholder in st.session_state.state['placeholders']:
+                    updated_placeholder = {}
+                    for key, value in placeholder.items():
+                        if value == "MISSING" and key in st.session_state.state['collected_details']:
+                            updated_placeholder[key] = st.session_state.state['collected_details'][key]
+                        else:
+                            updated_placeholder[key] = value
+                    updated_placeholders.append(updated_placeholder)
+                
+                st.session_state.state['placeholders'] = updated_placeholders
+                st.success("Missing details updated successfully!")        
             # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
             if st.button("Generate Final Document"):
                 with st.spinner("Generating document..."):
