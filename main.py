@@ -190,7 +190,7 @@ def main():
                 st.session_state.state['placeholders'] = fresponse.get("placeholders", [])
                 st.session_state.state['processed'] = True
             st.success("Input processed successfully!")
-        
+            
         # Display placeholders and definitions side by side
         if st.session_state.state['processed']:
             st.markdown('<div class="step-header">Step 2: Review and Update Details</div>', unsafe_allow_html=True)
@@ -206,21 +206,21 @@ def main():
                             st.session_state.state['collected_details'][key] = user_detail
                         else:
                             st.text_input(f"{key}:",key=f"filled_{i}_{key}", value=value, disabled=True)
-        
-            if st.button("Update Missing Details"):
-                updated_placeholders = []
-                for placeholder in st.session_state.state['placeholders']:
-                    updated_placeholder = {}
-                    for key, value in placeholder.items():
-                        if value == "MISSING" and key in st.session_state.state['collected_details']:
-                            updated_placeholder[key] = st.session_state.state['collected_details'][key]
-                        else:
-                            updated_placeholder[key] = value
-                    updated_placeholders.append(updated_placeholder)
-                
-                st.session_state.state['placeholders'] = updated_placeholders
-                st.success("Missing details updated successfully!")        
-                # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
+            
+                if st.button("Update Missing Details"):
+                    updated_placeholders = []
+                    for placeholder in st.session_state.state['placeholders']:
+                        updated_placeholder = {}
+                        for key, value in placeholder.items():
+                            if value == "MISSING" and key in st.session_state.state['collected_details']:
+                                updated_placeholder[key] = st.session_state.state['collected_details'][key]
+                            else:
+                                updated_placeholder[key] = value
+                        updated_placeholders.append(updated_placeholder)
+                    
+                    st.session_state.state['placeholders'] = updated_placeholders
+                    st.success("Missing details updated successfully!")        
+                    # st.markdown('<div class="step-header">Step 3: Generate and Download Document</div>', unsafe_allow_html=True)
                 if st.button("Generate Final Document"):
                     with st.spinner("Generating document..."):
                         doc_paths = {
@@ -232,18 +232,17 @@ def main():
                         "safe simple agreement for future equity" : doc6_path,
                         "founders stock purchase agreement" : doc7_path
                     }
-                    
-                        document_type = st.session_state.state['document_type'].lower()
-                    
-                        doc_path = doc_paths.get(document_type)
-                
-                        if doc_path:
-                            placeholders = {k: v for d in st.session_state.state['placeholders'] for k, v in d.items()}
-                            st.session_state.state['final_doc'] = add_content_to_document(doc_path, placeholders)
-                            st.session_state.state['document_generated'] = True
-                            st.success("Final document generated successfully!")
-                        else:
-                            st.error(f"No document path found for document type: {document_type}")
+                            
+                    document_type = st.session_state.state['document_type'].lower()
+                    doc_path = doc_paths.get(document_type)
+            
+                    if doc_path:
+                        placeholders = {k: v for d in st.session_state.state['placeholders'] for k, v in d.items()}
+                        st.session_state.state['final_doc'] = add_content_to_document(doc_path, placeholders)
+                        st.session_state.state['document_generated'] = True
+                        st.success("Final document generated successfully!")
+                    else:
+                        st.error(f"No document path found for document type: {document_type}")
                 if st.session_state.state['document_generated']:
                     bio = io.BytesIO()
                     st.session_state.state['final_doc'].save(bio)
@@ -257,10 +256,8 @@ def main():
                 # Display the final content of placeholders and definitions
                 if st.checkbox("Show final content"):
                     st.json(st.session_state.state['placeholders'])
+ 
             
-            else:
-                st.info("Please enter your query and click 'Process Input' to start.")
-            # st.markdown('</div>', unsafe_allow_html=True)
     with tab3:
         uploaded_file = st.file_uploader("Upload your file", type=["pdf", "csv", "docx", "xlsx", "xls"], label_visibility="collapsed")
         if uploaded_file is not None:
