@@ -11,7 +11,7 @@ import requests
 import json
 import io
 from second import process_input, add_content_to_document, doc1_path,doc2_path, doc3_path, doc4_path, doc5_path,doc6_path, doc7_path, placeholders1,placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7
-from compliance import run_workflow, compliance_workflow
+# from compliance import run_workflow, compliance_workflow
 # from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext
 
 
@@ -352,65 +352,65 @@ def main():
                 print(f"Response: {result}\n")
                 st.write(result)
                 
-    with tab7:
-        import logging
-        from pathlib import Path
-        import tempfile
-        # Initialize logging
-        logging.basicConfig(level=logging.INFO)
+    # with tab7:
+    #     import logging
+    #     from pathlib import Path
+    #     import tempfile
+    #     # Initialize logging
+    #     logging.basicConfig(level=logging.INFO)
 
         
         
-        # Setup workflow
-        uploaded_file = st.file_uploader("Upload Contract", type=["md", "pdf"])
+    #     # Setup workflow
+    #     uploaded_file = st.file_uploader("Upload Contract", type=["md", "pdf"])
         
-        if uploaded_file is not None:
-            try:
-                # Create a temporary directory to store the uploaded file
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    # Create a path for the temporary file
-                    temp_file_path = Path(temp_dir) / uploaded_file.name
+    #     if uploaded_file is not None:
+    #         try:
+    #             # Create a temporary directory to store the uploaded file
+    #             with tempfile.TemporaryDirectory() as temp_dir:
+    #                 # Create a path for the temporary file
+    #                 temp_file_path = Path(temp_dir) / uploaded_file.name
                     
-                    # Write the uploaded file content to the temporary file
-                    with open(temp_file_path, "wb") as f:
-                        f.write(uploaded_file.getvalue())
+    #                 # Write the uploaded file content to the temporary file
+    #                 with open(temp_file_path, "wb") as f:
+    #                     f.write(uploaded_file.getvalue())
                     
-                    with st.spinner("Running Compliance Workflow..."):
-                        # Run the workflow with the temporary file path
-                        response_dict = run_workflow(compliance_workflow, temp_file_path)
-                        # st.write(response_dict)
-                        # Display results
-                        st.success("Analysis Complete!")
+    #                 with st.spinner("Running Compliance Workflow..."):
+    #                     # Run the workflow with the temporary file path
+    #                     response_dict = run_workflow(compliance_workflow, temp_file_path)
+    #                     # st.write(response_dict)
+    #                     # Display results
+    #                     st.success("Analysis Complete!")
                         
-                        # Show overall compliance status
-                        if response_dict:
-                            st.write("✅ Contract is compliant")
+    #                     # Show overall compliance status
+    #                     if response_dict:
+    #                         st.write("✅ Contract is compliant")
                             
-                        else:
-                            st.write("❌ Contract has compliance issues")
+    #                     else:
+    #                         st.write("❌ Contract has compliance issues")
                         
-                        # Display detailed results in expandable sections
-                        with st.expander("View Detailed Results"):
-                            st.subheader("Compliance Report")
-                            # st.write(str(response_dict["report"]))
-                            st.write("**Vendor Name:**", response_dict["report"].vendor_name)
-                            st.write("**Overall Compliance:**", response_dict["report"].overall_compliant)
-                            st.write("**Summary Notes:**", response_dict["report"].summary_notes)
+    #                     # Display detailed results in expandable sections
+    #                     with st.expander("View Detailed Results"):
+    #                         st.subheader("Compliance Report")
+    #                         # st.write(str(response_dict["report"]))
+    #                         st.write("**Vendor Name:**", response_dict["report"].vendor_name)
+    #                         st.write("**Overall Compliance:**", response_dict["report"].overall_compliant)
+    #                         st.write("**Summary Notes:**", response_dict["report"].summary_notes)
 
                             
-                            if response_dict["non_compliant_results"]:
-                                st.subheader("Non-Compliant Clauses")
-                                # st.write(response_dict["non_compliant_results"])
-                                for result in response_dict["non_compliant_results"]:
-                                    st.write("**Clause:**", result.clause_text)
-                                    st.write("**Relevant Guideline:**", result.matched_guideline.guideline_text)
-                                    st.write("**Similarity Score:**", result.matched_guideline.similarity_score)
-                                    st.write("**Relevance Explanation:**", result.matched_guideline.relevance_explanation)
-                                    st.write("**Notes:**", result.notes)
+    #                         if response_dict["non_compliant_results"]:
+    #                             st.subheader("Non-Compliant Clauses")
+    #                             # st.write(response_dict["non_compliant_results"])
+    #                             for result in response_dict["non_compliant_results"]:
+    #                                 st.write("**Clause:**", result.clause_text)
+    #                                 st.write("**Relevant Guideline:**", result.matched_guideline.guideline_text)
+    #                                 st.write("**Similarity Score:**", result.matched_guideline.similarity_score)
+    #                                 st.write("**Relevance Explanation:**", result.matched_guideline.relevance_explanation)
+    #                                 st.write("**Notes:**", result.notes)
                             
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-                logging.error(f"Error processing file: {str(e)}", exc_info=True)
+            # except Exception as e:
+            #     st.error(f"An error occurred: {str(e)}")
+            #     logging.error(f"Error processing file: {str(e)}", exc_info=True)
 
 
 
