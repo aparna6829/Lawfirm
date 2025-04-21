@@ -103,7 +103,7 @@ st.markdown(
 # Main function
 def main():
     # Create tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📜 What is Legal Assist", "📄 Template Drafting", "📁 Document Insight", "🧠 Legal Inference Engine", "🧑🏼‍⚖️Legal Assistant", " 🔍 Legal Evidence", "🔐 GDPR Compliance"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📜 What is Legal Assist", "📄 Template Drafting", "📁 Document Insight", "🧠 Legal Inference Engine", "🧑🏼‍⚖️Legal Assistant", " 🔍 Legal Evidence"])
 
     with tab1:
         st.write("""<h2 style='color: #2c3e50; text-align: center;'>Your Trusted Legal Assistant</h2>""", unsafe_allow_html=True)
