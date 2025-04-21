@@ -16,4 +16,3 @@ pytesseract
 llama-index==0.12.11
 llama-parse==0.5.19
 llama-index-embeddings-huggingface==0.5.0
-google_generative-ai
