@@ -13,8 +13,8 @@ image
 pillow
 python-docx
 pytesseract
-llama-index==0.12.11
-llama-parse==0.5.19
-llama-index-embeddings-huggingface==0.5.0
+llama-index
+llama-parse
+llama-index-embeddings-huggingface
 google-genai
 google-generativeai
