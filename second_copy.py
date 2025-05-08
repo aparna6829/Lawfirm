@@ -14,27 +14,45 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemin
  
 doc1_path = "my_own.docx"
 doc2_path = "my_own2.docx"
-
+doc3_path = "Data_license_Agreement.docx"
+doc4_path = "professional_service_agreement.docx"
+doc5_path = "asset_purchase_agreement.docx"
+doc6_path = "SAFE2.docx"
+doc7_path = "Stock_Purchase_Agreement_Startups.docx"
  
 doc1 = Document(doc1_path)
 doc2 = Document(doc2_path)
-
+doc3=Document(doc3_path)
+doc4=Document(doc4_path)
+doc5=Document(doc5_path)
+doc6=Document(doc6_path)
+doc7=Document(doc7_path)
  
 placeholders1 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc1.paragraphs]))
 placeholders2 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc2.paragraphs]))
-
+placeholders3 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc3.paragraphs]))
+placeholders4 = re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc4.paragraphs]))
+placeholders5= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc5.paragraphs]))
+placeholders6= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc6.paragraphs]))
+placeholders7= re.findall(r'\{\{(.*?)\}\}', ' '.join([p.text for p in doc7.paragraphs]))
  
-def process_input(user_input, placeholders1, placeholders2):
+def process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,
+                  placeholders6,placeholders7):
     template = """
     You are an expert in filling details in word documents using placeholders and providing definitions for legal conditions.
     Use the provided details to fill out the placeholders .
     Determine which document the details are for based on the context provided.
-    Indicate which document the details belong to by specifying "Document: Master Service Agreement" or "Document: New York Agreement"  at the beginning of your response.
+    Indicate which document the details belong to by specifying "Document: Master Service Agreement" or "Document: New York Agreement" or "Document: Data License Agreement"
+    or "Document: asset purchase agreement" or "Document: Safe simple agreement for future Equity" or "Document: Founders stock purchase agreement" at the beginning of your response.
     If any details are missing, indicate which ones are missing.
    
     Document 1 (New York Agreement) placeholders: {placeholders1}
     Document 2 (Master Service Agreement) placeholders: {placeholders2}
-
+    Document 3 (Data License Agreement) placeholders: {placeholders3}
+    Document 4 (Professional service Agreement) placeholders: {placeholders4}
+    Document 5 (Asset purchase agreement) placeholders: {placeholders5}
+    Document 6 (Safe simple agreement for future Equity) placeholders : {placeholders6}
+    Document 7 (Founders stock purchase agreement) placeholders : {placeholders7}
    
    
     For Master Service Agreement, please give only date, don't give the year and other matter.
@@ -48,7 +66,7 @@ def process_input(user_input, placeholders1, placeholders2):
     Based on the user input, fill in the placeholders and provide definitions for relevant legal terms.
     Structure your response exactly like this, replacing the examples with actual content:
     [[
-        "document": "Master Service Agreement" or "New York Agreement",
+        "document": "Master Service Agreement" or "New York Agreement" or "Data License Agreement" or "Professional Service Agreement" or "Asset Purchase Agreement" or "Safe Simple Agreement for Future Equity" or "Founders Stock Purchase Agreement",
         "placeholders": [
             [["PLACEHOLDER1": "Value1"]],
             [["PLACEHOLDER2": "Value2"]],
@@ -67,7 +85,11 @@ def process_input(user_input, placeholders1, placeholders2):
    
     formatted_template = template.format(placeholders1=placeholders1,
                                          placeholders2=placeholders2,
-                                    
+                                         placeholders3=placeholders3,
+                                         placeholders4=placeholders4,
+                                         placeholders5=placeholders5,
+                                         placeholders6=placeholders6,
+                                         placeholders7=placeholders7,
                                          content=user_input)
     prompt = PromptTemplate(template=formatted_template)
     chain = prompt | llm

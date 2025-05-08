@@ -143,14 +143,14 @@ def main():
         with col1:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-                    <li><strong>Master Service Agreement</strong></li><li><strong>New York Agreement</strong></li><li><strong>Data License Agreement</strong></li><li><strong>Professional Service Agreement</strong></li>
+                    <li><strong>Master Service Agreement</strong></li>
                     
             </div>
             """,unsafe_allow_html=True)
         with col2:
             st.markdown("""
             <div style='text-align: justify; font-size: 16px; color: #34495e;'>
-                    <li><strong>Asset Purchase Agreement</strong></li> <li><strong>Safe Simple Agreement for Future Equity</strong></li> <li><strong>Founder's Stock Purchase Agreement</strong></li>
+                    <li><strong>New York Agreement</strong></li> 
                     
             </div>
             """,unsafe_allow_html=True)
@@ -172,7 +172,7 @@ def main():
         if user_input and st.button("Process Input"):
             st.session_state.state['user_input'] = user_input
             with st.spinner("Processing your input..."):
-                processed_response = process_input(user_input, placeholders1, placeholders2,placeholders3,placeholders4,placeholders5,placeholders6,placeholders7)
+                processed_response = process_input(user_input, placeholders1, placeholders2)
                 processed_response = processed_response.content
                 st.write(processed_response)
                 fresponse = processed_response.replace('[[', '{').replace(']]', '}')
@@ -226,11 +226,7 @@ def main():
                         doc_paths = {
                         "master service agreement": doc2_path,
                         "new york agreement": doc1_path,
-                        "data license agreement": doc3_path,
-                        "professional service agreement": doc4_path,
-                        "asset purchase agreement": doc5_path,
-                        "safe simple agreement for future equity" : doc6_path,
-                        "founders stock purchase agreement" : doc7_path
+
                     }
                             
                     document_type = st.session_state.state['document_type'].lower()
