@@ -8,7 +8,7 @@ import json
 import io
  
 Gemini = st.secrets["GOOGLE_API_KEY"]
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=Gemini)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", google_api_key=Gemini)
  
 
  
