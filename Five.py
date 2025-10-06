@@ -4,7 +4,7 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 Gemini = st.secrets["GOOGLE_API_KEY"]
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", google_api_key=Gemini)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=Gemini)
 
 
 def get_response(question):
