@@ -19,7 +19,7 @@ EMBEDDING_PATH = "INDEX_3"
 def get_summarized_response():
     cache_key = "embeddings_chain"
     if cache_key not in st.session_state:
-        embeddings = HuggingFaceEmbeddings()
+        embeddings = HuggingFaceEmbeddings(model_name = "sentence-transformers/all-mpnet-base-v2")
         vector = FAISS.load_local(EMBEDDING_PATH, embeddings, allow_dangerous_deserialization=True)
         retriever_from_llm = MultiQueryRetriever.from_llm(
             retriever=vector.as_retriever(search_kwargs={"k": 10}),  # Increase k to get more results

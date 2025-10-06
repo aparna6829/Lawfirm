@@ -52,7 +52,8 @@ def load_file(uploaded_file, file_name):
         print(error)
         raise
 
-    embeddings = HuggingFaceEmbeddings()
+    embeddings = HuggingFaceEmbeddings(model_name = "sentence-transformers/all-mpnet-base-v2")
+
     vector = FAISS.from_documents(documents, embedding=embeddings)
     vector.save_local(f"{file_name}_INDEX")
     print("FAISS DB SAVED")
@@ -63,7 +64,8 @@ def get_summarized_response(embedding_path, file_upload_name):
     cache_key = f"embeddings_{embedding_path}_{file_upload_name}"
     chain = None
     if cache_key not in st.session_state:
-        embeddings = HuggingFaceEmbeddings()
+        embeddings = HuggingFaceEmbeddings(model_name = "sentence-transformers/all-mpnet-base-v2")
+
         vector = FAISS.load_local(embedding_path, embeddings, allow_dangerous_deserialization=True)
         db = vector.as_retriever()
    
